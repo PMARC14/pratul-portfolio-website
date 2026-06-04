@@ -1,29 +1,33 @@
-# Create T3 App
+# Pratul Maddipudi - Personal Portfolio
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A highly performant, full-stack personal portfolio website designed to showcase my software engineering projects, technical skills, and professional background. 
 
-## What's next? How do I make an app with this?
+This project is built with a focus on strict type safety, fast edge-rendering, and a seamless developer experience.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🚀 Tech Stack
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+This project utilizes a modern, edge-compatible web stack:
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+* **Framework:** [Next.js](https://nextjs.org/) (App Router & React Server Components)
+* **Language:** [TypeScript](https://www.typescriptlang.org/)
+* **API Layer:** [tRPC](https://trpc.io/) (End-to-end typesafe APIs)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Database:** [SQLite](https://sqlite.org/) 
+* **ORM:** [Drizzle ORM](https://orm.drizzle.team/)
+* **Hosting:** [Cloudflare Pages & Workers](https://developers.cloudflare.com/pages/)
 
-## Learn More
+## ✨ Key Features
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+* **Server-Side Rendering:** Utilizes React Server Components (RSC) to ship minimal JavaScript to the client, maximizing Lighthouse performance scores and Core Web Vitals.
+* **Type-Safe Data Fetching:** tRPC ensures that the API contract between the frontend and the SQLite database remains strictly typed, eliminating runtime errors.
+* **Dynamic Content:** Projects and technical skills are served dynamically from the database, making it easy to update the portfolio without touching the frontend code.
+* **Responsive Design:** Fully mobile-responsive UI built with utility-first Tailwind CSS.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## 🛠️ Local Development
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Because this project uses a local SQLite database, getting it running on your machine is incredibly fast and requires zero external database configuration.
 
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
+   cd your-repo-name
