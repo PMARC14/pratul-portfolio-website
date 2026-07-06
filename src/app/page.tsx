@@ -1,103 +1,87 @@
-import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
-import { LatestPost } from "@/app/_components/post";
-import { auth } from "@/server/better-auth";
-import { getSession } from "@/server/better-auth/server";
-import { api, HydrateClient } from "@/trpc/server";
+import { ProjectList } from "@/components/project-list";
+import { featuredProjects } from "@/data/projects";
+import { site } from "@/data/site";
+import { accent } from "@/lib/accents";
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await getSession();
+export default function Home() {
+	return (
+		<>
+			{/* Hero fills the first viewport; its content dims and drifts
+			    upward as you scroll (scroll-driven, reduced-motion aware). */}
+			<section className="relative mx-auto flex min-h-[calc(100dvh-3.75rem)] w-full max-w-5xl flex-col justify-center px-6 py-20">
+				<div className="scroll-dim">
+					<p className="animate-rise font-mono text-accent text-xs uppercase tracking-widest">
+						{site.role} &middot; {site.location}
+					</p>
+					<h1 className="mt-5 max-w-3xl animate-rise text-balance font-semibold text-5xl tracking-tight [animation-delay:80ms] sm:text-7xl">
+						I build fast, thoughtful software for the web.
+					</h1>
+					<p className="mt-6 max-w-xl animate-rise text-lg text-muted leading-relaxed [animation-delay:160ms]">
+						I'm {site.name.split(" ")[0]} — an engineer who cares about the
+						details: clean systems, quick pages, and interfaces that feel
+						obvious. I work across the stack with TypeScript, React, and modern
+						edge infrastructure.
+					</p>
+					<div className="mt-10 flex animate-rise flex-wrap items-center gap-4 [animation-delay:240ms]">
+						<a
+							className="rounded-full bg-ink px-6 py-3 font-medium text-bg text-sm transition-colors hover:bg-accent"
+							href="#work"
+						>
+							View my work &darr;
+						</a>
+						<Link
+							className="rounded-full border border-line px-6 py-3 font-medium text-sm transition-colors hover:border-accent hover:text-accent"
+							href="/contact"
+						>
+							Get in touch
+						</Link>
+					</div>
+				</div>
 
-  if (session) {
-    void api.post.getLatest.prefetch();
-  }
+				<div className="scroll-cue-fade absolute bottom-8 left-1/2 -translate-x-1/2">
+					<span className="flex animate-float items-center gap-2 font-mono text-muted text-xs uppercase tracking-widest">
+						Scroll <span aria-hidden="true">&darr;</span>
+					</span>
+				</div>
+			</section>
 
-  return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
+			<section
+				aria-labelledby="work-heading"
+				className="mx-auto w-full max-w-5xl scroll-mt-24 px-6 pb-24 sm:pb-32"
+				id="work"
+				style={accent.green}
+			>
+				<div className="reveal mb-8 flex items-baseline justify-between">
+					<h2
+						className="font-mono text-accent text-xs uppercase tracking-widest"
+						id="work-heading"
+					>
+						Selected work
+					</h2>
+					<span className="font-mono text-muted text-xs tabular-nums">
+						{String(featuredProjects.length).padStart(2, "0")} projects
+					</span>
+				</div>
 
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              {!session ? (
-                <form>
-                  <button
-                    className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-                    formAction={async () => {
-                      "use server";
-                      const res = await auth.api.signInSocial({
-                        body: {
-                          provider: "github",
-                          callbackURL: "/",
-                        },
-                      });
-                      if (!res.url) {
-                        throw new Error("No URL returned from signInSocial");
-                      }
-                      redirect(res.url);
-                    }}
-                  >
-                    Sign in with Github
-                  </button>
-                </form>
-              ) : (
-                <form>
-                  <button
-                    className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-                    formAction={async () => {
-                      "use server";
-                      await auth.api.signOut({
-                        headers: await headers(),
-                      });
-                      redirect("/");
-                    }}
-                  >
-                    Sign out
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
+				<ProjectList projects={featuredProjects} />
 
-          {session?.user && <LatestPost />}
-        </div>
-      </main>
-    </HydrateClient>
-  );
+				<div className="reveal mt-10">
+					<Link
+						className="group inline-flex items-center gap-2 font-medium text-sm transition-colors hover:text-accent"
+						href="/projects"
+					>
+						All project breakdowns
+						<span
+							aria-hidden="true"
+							className="transition-transform group-hover:translate-x-1"
+						>
+							&rarr;
+						</span>
+					</Link>
+				</div>
+			</section>
+		</>
+	);
 }

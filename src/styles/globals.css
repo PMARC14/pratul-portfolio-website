@@ -1,6 +1,192 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+/*
+ * Design tokens.
+ *
+ * Neutral surfaces (bg/ink/muted/line) + a three-color accent family:
+ * red, dark green, light blue. `--accent` is the *contextual* accent —
+ * it defaults to red and is re-pointed per section/row via inline
+ * `style={{ "--accent": … }}`, which re-tints every `*-accent` utility
+ * in that subtree. That is what makes the palette "rotate" while every
+ * element still draws from the same five roles.
+ *
+ * Theme resolution (see the inline script in layout.tsx):
+ *   • no `data-theme` attribute → follow the system preference
+ *   • `data-theme="light" | "dark"` → forced by the user toggle
+ * Dark mode is OLED black. The dark palette appears twice below
+ * (media query + forced attribute) — keep the two blocks in sync.
+ */
+:root {
+	color-scheme: light;
+
+	--bg: oklch(98.6% 0.002 250);
+	--ink: oklch(19% 0.01 260);
+	--muted: oklch(45% 0.012 255);
+	--line: oklch(90.5% 0.005 250);
+
+	--accent-red: oklch(53% 0.22 28);
+	--accent-green: oklch(44% 0.1 156);
+	--accent-blue: oklch(52% 0.1 232);
+	--accent: var(--accent-red);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		color-scheme: dark;
+
+		--bg: oklch(0% 0 0);
+		--ink: oklch(93% 0.005 250);
+		--muted: oklch(66% 0.008 250);
+		--line: oklch(26% 0.008 250);
+
+		--accent-red: oklch(67% 0.23 29);
+		--accent-green: oklch(74% 0.14 158);
+		--accent-blue: oklch(78% 0.1 225);
+	}
+}
+
+:root[data-theme="dark"] {
+	color-scheme: dark;
+
+	--bg: oklch(0% 0 0);
+	--ink: oklch(93% 0.005 250);
+	--muted: oklch(66% 0.008 250);
+	--line: oklch(26% 0.008 250);
+
+	--accent-red: oklch(70% 0.18 25);
+	--accent-green: oklch(74% 0.14 158);
+	--accent-blue: oklch(78% 0.1 225);
+}
+
+@theme inline {
+	--color-bg: var(--bg);
+	--color-ink: var(--ink);
+	--color-muted: var(--muted);
+	--color-line: var(--line);
+	--color-accent: var(--accent);
+	--color-accent-red: var(--accent-red);
+	--color-accent-green: var(--accent-green);
+	--color-accent-blue: var(--accent-blue);
+
+	--font-sans:
+		var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--font-mono:
+		var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
+		monospace;
+
+	--animate-rise: rise 0.7s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+	--animate-float: float 2.4s ease-in-out infinite;
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(6px);
+	}
+}
+
+@keyframes scroll-fade-out {
+	to {
+		opacity: 0;
+		transform: translateY(-24px);
+	}
+}
+
+@keyframes scroll-dim {
+	to {
+		opacity: 0.25;
+		transform: translateY(-28px);
+	}
+}
+
+@keyframes view-rise {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
+	::selection {
+		background-color: var(--accent);
+		color: var(--bg);
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+		border-radius: 2px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+
+		/* !important is required: these must beat Tailwind's utilities
+		   layer (e.g. animate-*), which outranks this base layer. */
+		*,
+		::before,
+		::after {
+			/* biome-ignore lint/complexity/noImportantStyles: see above */
+			animation-duration: 0.01ms !important;
+			/* biome-ignore lint/complexity/noImportantStyles: see above */
+			animation-iteration-count: 1 !important;
+			/* biome-ignore lint/complexity/noImportantStyles: see above */
+			transition-duration: 0.01ms !important;
+		}
+	}
+}
+
+/*
+ * Scroll-driven effects (CSS scroll-driven animations).
+ * Progressive enhancement: browsers without `animation-timeline`
+ * support — and users preferring reduced motion — get the static page.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	@supports (animation-timeline: scroll()) {
+		/* Hero content dims and drifts up as you scroll away from the top. */
+		.scroll-dim {
+			animation: scroll-dim linear both;
+			animation-timeline: scroll(root);
+			animation-range: 0 min(70vh, 640px);
+		}
+
+		/* The "scroll" cue disappears almost immediately once you move. */
+		.scroll-cue-fade {
+			animation: scroll-fade-out linear both;
+			animation-timeline: scroll(root);
+			animation-range: 0 180px;
+		}
+
+		/* List rows / sections rise in as they enter the viewport. */
+		.reveal {
+			animation: view-rise linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 55%;
+		}
+	}
 }

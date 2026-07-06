@@ -1,10 +1,17 @@
 /**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
- * for Docker builds.
+ * Static export: the whole site compiles to plain HTML/CSS/JS in `out/`,
+ * which is what lets one build serve both Cloudflare Workers (static
+ * assets) and Cloudflare Pages. Anything that needs a server (API routes,
+ * SSR, next/image optimization) is intentionally off the table.
+ *
+ * @type {import("next").NextConfig}
  */
-import "./src/env.js";
-
-/** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+	output: "export",
+	images: { unoptimized: true },
+	// Pin the workspace root: a stray lockfile in the user profile dir
+	// otherwise makes Next infer the wrong one.
+	outputFileTracingRoot: import.meta.dirname,
+};
 
 export default config;

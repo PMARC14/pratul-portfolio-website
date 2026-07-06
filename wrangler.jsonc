@@ -1,0 +1,20 @@
+/**
+ * Cloudflare Workers config — serves the static export in `out/` as an
+ * assets-only Worker (no Worker script, no runtime cost, free-plan friendly).
+ *
+ *   npm run deploy        → build + `wrangler deploy` (Workers)
+ *   npm run deploy:pages  → build + `wrangler pages deploy` (Pages fallback)
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "pratul-portfolio",
+	"compatibility_date": "2026-06-01",
+	"assets": {
+		// Output of `next build` (static export).
+		"directory": "./out",
+		// Serve Next's generated 404.html for unknown paths.
+		"not_found_handling": "404-page",
+		// /about ↔ about.html resolution to match Next's export layout.
+		"html_handling": "auto-trailing-slash"
+	}
+}

@@ -1,0 +1,10 @@
+# Honored by both Cloudflare Workers static assets and Cloudflare Pages.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Next.js emits content-hashed filenames here — safe to cache forever.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

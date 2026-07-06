@@ -1,0 +1,88 @@
+# CI/CD: every push and PR is linted, typechecked, and tested; pushes to
+# main then deploy the SAME build artifact to both Cloudflare targets —
+# Workers (primary, what pratul.maddipudi.com points at) and Pages
+# (static fallback).
+#
+# One-time setup (see README → "Automatic deploys"):
+#   1. Create a Cloudflare API token and add repo secrets
+#      CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+#   2. Create the Pages project once:
+#      npx wrangler pages project create pratul-portfolio
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Lint, typecheck, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run check
+
+      - run: npm run typecheck
+
+      # pretest builds the static export, then the suite asserts on it.
+      - run: npm test
+
+      - name: Share build with deploy jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: out
+          retention-days: 7
+
+  deploy-workers:
+    name: Deploy to Cloudflare Workers
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: out
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+  deploy-pages:
+    name: Deploy to Cloudflare Pages (fallback)
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: out
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name=pratul-portfolio --branch=main --commit-dirty=true
