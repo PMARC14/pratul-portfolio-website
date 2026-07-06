@@ -1,9 +1,12 @@
 # Pratul Maddipudi — Personal Portfolio
 
-Personal portfolio at **pratul.maddipudi.com** — a fully static Next.js 15
-site served from Cloudflare's edge. One `next build` produces `out/`, and
-that same artifact deploys to **Cloudflare Workers** (primary) or
-**Cloudflare Pages** (fallback). No servers, no runtime, nothing to operate.
+Personal portfolio at **pratul.maddipudi.com** — a static-first Next.js 15
+site served from Cloudflare's edge, plus one small dynamic feature (the
+[contact book](#contact-book-d1sqlite), backed by D1/SQLite). One
+`next build` produces `out/`; the Worker serves those static assets
+directly and only runs code for `/api/*`. The same static artifact also
+deploys to **Cloudflare Pages** as a fallback (where the contact book
+degrades to a notice, since Pages has no Worker).
 
 ## Stack
 
@@ -46,6 +49,33 @@ at that path, and as long as you don't add it to the nav or
 
 > Unlisted ≠ private: the page is still a public URL for anyone who has
 > (or guesses) the link. Don't put confidential content on one.
+
+## Contact book (D1/SQLite)
+
+`/contact-book` is a guestbook: visitors leave a name + message (public)
+and optionally a way to reach them (**stored, never displayed, and never
+returned by the API** — read it yourself with
+`npx wrangler d1 execute portfolio-contact-book --remote --command "SELECT * FROM entries"`).
+Spam is filtered by a honeypot field and strict length limits, validated in
+[`src/worker/validate.ts`](src/worker/validate.ts) (unit-tested).
+
+The pieces: [`migrations/`](migrations/) (schema),
+[`src/worker/index.ts`](src/worker/index.ts) (the `/api/entries` handler),
+and [`src/app/contact-book/`](src/app/contact-book/) (the page — static
+HTML whose form talks to the API from the browser).
+
+**One-time activation:**
+
+```bash
+npx wrangler d1 create portfolio-contact-book   # prints a database_id
+# → paste that id into wrangler.jsonc (replacing the zeroed placeholder)
+npm run db:migrate          # local database, used by `npm run preview`
+npm run db:migrate:remote   # production database
+```
+
+Until then, deploys to Workers will fail (the binding points at a
+placeholder id) — local `npm run preview` works immediately after
+`npm run db:migrate`, no Cloudflare account needed.
 
 ## Development
 

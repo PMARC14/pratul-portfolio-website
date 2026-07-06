@@ -1,20 +1,45 @@
 /**
- * Cloudflare Workers config — serves the static export in `out/` as an
- * assets-only Worker (no Worker script, no runtime cost, free-plan friendly).
+ * Cloudflare Workers config.
+ *
+ * The Worker serves the static export in `out/` AND a small dynamic API
+ * (the contact book, backed by D1/SQLite). Requests that match a static
+ * asset are served directly without invoking the Worker; everything
+ * else (/api/*, unknown paths) runs src/worker/index.ts.
  *
  *   npm run deploy        → build + `wrangler deploy` (Workers)
- *   npm run deploy:pages  → build + `wrangler pages deploy` (Pages fallback)
+ *   npm run deploy:pages  → build + `wrangler pages deploy` (static fallback;
+ *                           no Worker, so /api/* — the contact book — is
+ *                           Workers-only and the page degrades gracefully)
+ *
+ * ⚠ Before the first deploy with D1:
+ *   1. npx wrangler d1 create portfolio-contact-book
+ *   2. Paste the real database_id below (the current one is a placeholder;
+ *      local dev works with it, deploys won't).
+ *   3. npm run db:migrate           (local database for wrangler dev)
+ *      npm run db:migrate:remote    (production database)
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "pratul-portfolio",
 	"compatibility_date": "2026-06-01",
+	"main": "src/worker/index.ts",
 	"assets": {
 		// Output of `next build` (static export).
 		"directory": "./out",
+		// Lets the Worker hand non-API routes back to static assets.
+		"binding": "ASSETS",
 		// Serve Next's generated 404.html for unknown paths.
 		"not_found_handling": "404-page",
 		// /about ↔ about.html resolution to match Next's export layout.
 		"html_handling": "auto-trailing-slash"
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "portfolio-contact-book",
+			// PLACEHOLDER — replace with the id from `wrangler d1 create`.
+			"database_id": "00000000-0000-0000-0000-000000000000",
+			"migrations_dir": "migrations"
+		}
+	]
 }

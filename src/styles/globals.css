@@ -23,11 +23,17 @@
 	--ink: oklch(19% 0.01 260);
 	--muted: oklch(45% 0.012 255);
 	--line: oklch(90.5% 0.005 250);
+	--panel: oklch(100% 0 0);
 
-	--accent-red: oklch(53% 0.22 28);
-	--accent-green: oklch(44% 0.1 156);
-	--accent-blue: oklch(52% 0.1 232);
+	/* Bright red · dark forest green · sky blue (darkened here for
+	   contrast on paper; the true light-sky reading lives in dark mode). */
+	--accent-red: oklch(56% 0.23 28);
+	--accent-green: oklch(43% 0.12 150);
+	--accent-blue: oklch(55% 0.13 238);
 	--accent: var(--accent-red);
+
+	--shadow-menu:
+		0 12px 32px -8px rgb(0 0 0 / 0.18), 0 4px 12px -6px rgb(0 0 0 / 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,10 +44,18 @@
 		--ink: oklch(93% 0.005 250);
 		--muted: oklch(66% 0.008 250);
 		--line: oklch(26% 0.008 250);
+		--panel: oklch(14% 0.006 250);
 
-		--accent-red: oklch(67% 0.23 29);
-		--accent-green: oklch(74% 0.14 158);
-		--accent-blue: oklch(78% 0.1 225);
+		/* On OLED black: red stays bright, green keeps its forest depth,
+		   blue reads as true light sky. */
+		--accent-red: oklch(67% 0.235 30);
+		--accent-green: oklch(65% 0.15 150);
+		--accent-blue: oklch(80% 0.12 227);
+
+		/* Shadows barely register on pure black — elevation comes from the
+		   lighter panel surface, a hairline ring, and a deep umbra. */
+		--shadow-menu:
+			0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -8px rgb(0 0 0 / 0.9);
 	}
 }
 
@@ -63,10 +77,13 @@
 	--color-ink: var(--ink);
 	--color-muted: var(--muted);
 	--color-line: var(--line);
+	--color-panel: var(--panel);
 	--color-accent: var(--accent);
 	--color-accent-red: var(--accent-red);
 	--color-accent-green: var(--accent-green);
 	--color-accent-blue: var(--accent-blue);
+
+	--shadow-menu: var(--shadow-menu);
 
 	--font-sans:
 		var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,

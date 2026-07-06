@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		{ url: `${site.url}/projects`, priority: 0.8 },
 		{ url: `${site.url}/about`, priority: 0.8 },
 		{ url: `${site.url}/contact`, priority: 0.7 },
+		{ url: `${site.url}/contact-book`, priority: 0.5 },
 		...visibleProjects.map((project) => ({
 			url: `${site.url}/projects/${project.slug}`,
 			priority: 0.6,

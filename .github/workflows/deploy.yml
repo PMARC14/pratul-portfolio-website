@@ -62,6 +62,15 @@ jobs:
           name: site-dist
           path: out
 
+      # Schema first, then code that expects it. Fails until the D1
+      # database exists and its id is in wrangler.jsonc (see README).
+      - name: Apply D1 migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply portfolio-contact-book --remote
+
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

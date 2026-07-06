@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { site } from "@/data/site";
 import { accent, accentStyle } from "@/lib/accents";
@@ -68,6 +69,17 @@ export default function ContactPage() {
 					&rarr;
 				</span>
 			</a>
+
+			<p className="mt-6 text-muted text-sm" style={accent.green}>
+				Not an email person?{" "}
+				<Link
+					className="font-medium text-ink underline decoration-2 decoration-accent underline-offset-4 transition-colors hover:text-accent"
+					href="/contact-book"
+				>
+					Sign the contact book
+				</Link>{" "}
+				instead.
+			</p>
 
 			<ul className="mt-16 grid gap-4 sm:grid-cols-3">
 				{channels.map((channel, index) => (

@@ -36,21 +36,40 @@ export function SiteHeader({ projects }: { projects: DropdownProject[] }) {
 
 	useEffect(() => {
 		let lastY = window.scrollY;
+		let scrollingDown = false;
+		let nearTop = false;
 		let ticking = false;
+
+		const update = () => {
+			setHidden(scrollingDown && !nearTop && window.scrollY > 96);
+		};
 
 		function onScroll() {
 			if (ticking) return;
 			ticking = true;
 			requestAnimationFrame(() => {
 				const y = window.scrollY;
-				setHidden(y > lastY && y > 96);
+				scrollingDown = y > lastY;
 				lastY = y;
 				ticking = false;
+				update();
 			});
 		}
 
+		// Moving the pointer near the top edge summons the header back
+		// without needing to scroll up.
+		function onPointerMove(event: PointerEvent) {
+			const wasNearTop = nearTop;
+			nearTop = event.clientY <= 80;
+			if (nearTop !== wasNearTop) update();
+		}
+
 		window.addEventListener("scroll", onScroll, { passive: true });
-		return () => window.removeEventListener("scroll", onScroll);
+		window.addEventListener("pointermove", onPointerMove, { passive: true });
+		return () => {
+			window.removeEventListener("scroll", onScroll);
+			window.removeEventListener("pointermove", onPointerMove);
+		};
 	}, []);
 
 	return (
@@ -108,7 +127,7 @@ export function SiteHeader({ projects }: { projects: DropdownProject[] }) {
 
 										{isProjects && (
 											<div className="invisible absolute top-full left-1/2 hidden -translate-x-1/2 translate-y-1 pt-3 opacity-0 transition-all duration-200 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 sm:block">
-												<ul className="w-72 rounded-2xl border border-line bg-bg p-2 shadow-black/10 shadow-xl">
+												<ul className="w-72 rounded-2xl border border-line bg-panel p-2 shadow-menu">
 													{projects.map((project, index) => (
 														<li key={project.slug} style={accentStyle(index)}>
 															<Link

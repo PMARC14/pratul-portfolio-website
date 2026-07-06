@@ -45,6 +45,7 @@ describe("routes", () => {
 		"about.html",
 		"projects.html",
 		"contact.html",
+		"contact-book.html",
 		"404.html",
 		"robots.txt",
 		"sitemap.xml",
