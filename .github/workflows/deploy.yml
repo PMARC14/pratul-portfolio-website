@@ -1,13 +1,19 @@
-# CI/CD: every push and PR is linted, typechecked, and tested; pushes to
-# main then deploy the SAME build artifact to both Cloudflare targets —
-# Workers (primary, what pratul.maddipudi.com points at) and Pages
-# (static fallback).
+# CI/CD: every push and PR is linted, typechecked, and tested.
 #
-# One-time setup (see README → "Automatic deploys"):
-#   1. Create a Cloudflare API token and add repo secrets
-#      CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
-#   2. Create the Pages project once:
-#      npx wrangler pages project create pratul-portfolio
+# ─────────────────────────────────────────────────────────────────────
+#  ⚠ DEPLOYS TEMPORARILY DISABLED — both deploy jobs carry `if: false`.
+#  Re-enable by restoring `if: github.event_name != 'pull_request'`
+#  on each, after the one-time Cloudflare setup:
+#    1. Repo secrets CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
+#    2. npx wrangler pages project create pratul-portfolio
+#    3. npx wrangler d1 create portfolio-contact-book
+#       → paste the id into wrangler.jsonc, then npm run db:migrate:remote
+# ─────────────────────────────────────────────────────────────────────
+#
+# All actions here are Node 24-native (checkout@v5, setup-node@v5,
+# upload-artifact@v5, download-artifact@v6). Cloudflare deploys call the
+# Wrangler CLI from our own lockfile instead of cloudflare/wrangler-action,
+# which still targets the deprecated Node 20 runtime.
 
 name: Deploy
 
@@ -26,11 +32,11 @@ jobs:
     name: Lint, typecheck, test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -43,7 +49,7 @@ jobs:
       - run: npm test
 
       - name: Share build with deploy jobs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: site-dist
           path: out
@@ -52,46 +58,56 @@ jobs:
   deploy-workers:
     name: Deploy to Cloudflare Workers
     needs: test
-    if: github.event_name != 'pull_request'
+    if: false # TEMP disabled — restore: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      # Wrangler comes from the lockfile — same version as local dev.
+      - run: npm ci
+
+      - uses: actions/download-artifact@v6
         with:
           name: site-dist
           path: out
 
-      # Schema first, then code that expects it. Fails until the D1
-      # database exists and its id is in wrangler.jsonc (see README).
+      # Schema first, then code that expects it.
       - name: Apply D1 migrations
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 migrations apply portfolio-contact-book --remote
+        run: npx wrangler d1 migrations apply portfolio-contact-book --remote
 
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+      - name: Deploy Worker + static assets
+        run: npx wrangler deploy
 
   deploy-pages:
     name: Deploy to Cloudflare Pages (fallback)
     needs: test
-    if: github.event_name != 'pull_request'
+    if: false # TEMP disabled — restore: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v6
         with:
           name: site-dist
           path: out
 
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy out --project-name=pratul-portfolio --branch=main --commit-dirty=true
+      - name: Deploy static fallback
+        run: npx wrangler pages deploy out --project-name=pratul-portfolio --branch=main --commit-dirty=true

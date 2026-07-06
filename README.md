@@ -117,7 +117,14 @@ run a build first for the output tests).
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) runs on
 every push and PR: lint → typecheck → tests. Pushes to `main` that pass
 then deploy the same build artifact to **both** Cloudflare Workers and
-Cloudflare Pages automatically. One-time setup:
+Cloudflare Pages automatically.
+
+> **Deploys are currently disabled** (`if: false` on both deploy jobs in
+> the workflow) until the one-time setup below is done. Tests still run
+> on every push/PR. To re-enable, replace each `if: false` with
+> `if: github.event_name != 'pull_request'`.
+
+One-time setup:
 
 1. Create the Pages project: `npx wrangler pages project create pratul-portfolio`
 2. In Cloudflare: **My Profile → API Tokens → Create Token**, using the
