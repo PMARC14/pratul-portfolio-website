@@ -41,13 +41,16 @@ describe("validateEntry", () => {
 		}
 	});
 
-	it.each([null, undefined, "string", 42, []])(
-		"rejects non-object input %p",
-		(input) => {
-			// Arrays are objects but have no usable fields → fails on name.
-			expect(validateEntry(input).ok).toBe(false);
-		},
-	);
+	it.each([
+		null,
+		undefined,
+		"string",
+		42,
+		[],
+	])("rejects non-object input %p", (input) => {
+		// Arrays are objects but have no usable fields → fails on name.
+		expect(validateEntry(input).ok).toBe(false);
+	});
 
 	it("rejects a missing or blank name", () => {
 		expect(validateEntry({ ...valid, name: undefined }).ok).toBe(false);

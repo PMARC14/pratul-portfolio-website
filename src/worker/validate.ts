@@ -39,7 +39,10 @@ export function validateEntry(input: unknown): ValidationResult {
 		return { ok: false, error: "Name is required." };
 	}
 	if (name.length > LIMITS.name) {
-		return { ok: false, error: `Name must be ${LIMITS.name} characters or fewer.` };
+		return {
+			ok: false,
+			error: `Name must be ${LIMITS.name} characters or fewer.`,
+		};
 	}
 	if (!message) {
 		return { ok: false, error: "Message is required." };

@@ -22,8 +22,8 @@ export default function ContactBookPage() {
 				Leave a note.
 			</h1>
 			<p className="mt-5 max-w-xl text-lg text-muted leading-relaxed">
-				Passing through? Sign the book. Your name and message appear below;
-				if you leave a way to reach you, only I can see it.
+				Passing through? Sign the book. Your name and message appear below; if
+				you leave a way to reach you, only I can see it.
 			</p>
 
 			<div className="mt-14">

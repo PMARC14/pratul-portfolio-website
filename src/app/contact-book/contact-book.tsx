@@ -88,10 +88,10 @@ export function ContactBook() {
 	if (status === "unavailable") {
 		return (
 			<div className="max-w-xl rounded-2xl border border-line p-6 text-muted text-sm leading-relaxed">
-				The contact book runs on the Cloudflare Workers deployment — this
-				copy of the site is static, so signing is disabled here. Locally,
-				run <code className="font-mono text-ink">npm run db:migrate</code>{" "}
-				once, then <code className="font-mono text-ink">npm run preview</code>.
+				The contact book runs on the Cloudflare Workers deployment — this copy
+				of the site is static, so signing is disabled here. Locally, run{" "}
+				<code className="font-mono text-ink">npm run db:migrate</code> once,
+				then <code className="font-mono text-ink">npm run preview</code>.
 			</div>
 		);
 	}
@@ -122,7 +122,8 @@ export function ContactBook() {
 						className="font-mono text-muted text-xs uppercase tracking-widest"
 						htmlFor="cb-contact"
 					>
-						Contact <span className="normal-case">(optional, only I see it)</span>
+						Contact{" "}
+						<span className="normal-case">(optional, only I see it)</span>
 					</label>
 					<input
 						className={`mt-2 ${inputClasses}`}
