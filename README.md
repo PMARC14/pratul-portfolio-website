@@ -128,11 +128,18 @@ One-time setup:
 
 1. Create the Pages project: `npx wrangler pages project create pratul-portfolio`
 2. In Cloudflare: **My Profile → API Tokens → Create Token**, using the
-   *Edit Cloudflare Workers* template, and add **Cloudflare Pages: Edit**
-   permission to it.
+   *Edit Cloudflare Workers* template, and add two permissions to it:
+   **Account → Cloudflare Pages → Edit** (Pages deploy job) and
+   **Account → D1 → Edit** (contact-book migrations). Copy the token when
+   shown — Cloudflare displays it only once.
 3. In the GitHub repo: **Settings → Secrets and variables → Actions**, add
    `CLOUDFLARE_API_TOKEN` (the token) and `CLOUDFLARE_ACCOUNT_ID` (from the
-   Cloudflare dashboard's right sidebar).
+   right sidebar of the dashboard's **Workers & Pages** overview).
+
+Secrets live only in those two places: GitHub Actions secrets for CI, and
+`npx wrangler login` (OAuth, cached in your user profile) for local deploys.
+Never put tokens in `wrangler.jsonc`, the workflow file, or anything
+committed — the repo is public.
 
 After that, `git push` to main is a deploy. The manual commands below still
 work as an escape hatch.
