@@ -1,14 +1,10 @@
 # CI/CD: every push and PR is linted, typechecked, and tested.
-#
-# ─────────────────────────────────────────────────────────────────────
-#  ⚠ DEPLOYS TEMPORARILY DISABLED — both deploy jobs carry `if: false`.
-#  Re-enable by restoring `if: github.event_name != 'pull_request'`
-#  on each, after the one-time Cloudflare setup:
-#    1. Repo secrets CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
-#    2. npx wrangler pages project create pratul-portfolio
-#    3. npx wrangler d1 create portfolio-contact-book
-#       → paste the id into wrangler.jsonc, then npm run db:migrate:remote
-# ─────────────────────────────────────────────────────────────────────
+# Pushes to `main` that pass then deploy to both Cloudflare Workers and
+# Cloudflare Pages. Requires (see README's "Automatic deploys" section):
+#   1. Repo secrets CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
+#   2. npx wrangler pages project create pratul-portfolio
+#   3. npx wrangler d1 create portfolio-contact-book
+#      → paste the id into wrangler.jsonc, then npm run db:migrate:remote
 #
 # All actions here are Node 24-native (checkout@v5, setup-node@v5,
 # upload-artifact@v5, download-artifact@v6). Cloudflare deploys call the
@@ -58,7 +54,7 @@ jobs:
   deploy-workers:
     name: Deploy to Cloudflare Workers
     needs: test
-    if: false # TEMP disabled — restore: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -89,7 +85,7 @@ jobs:
   deploy-pages:
     name: Deploy to Cloudflare Pages (fallback)
     needs: test
-    if: false # TEMP disabled — restore: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
