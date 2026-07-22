@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { site } from "@/data/site";
+import { links, site } from "@/data/site";
 import { accent } from "@/lib/accents";
 
 export function SiteFooter() {
@@ -28,7 +28,7 @@ export function SiteFooter() {
 					<li>
 						<a
 							className="transition-colors hover:text-ink"
-							href={site.github}
+							href={links.github.href}
 							rel="noreferrer"
 							target="_blank"
 						>
@@ -38,8 +38,18 @@ export function SiteFooter() {
 					<li>
 						<a
 							className="transition-colors hover:text-ink"
+							href={links.linkedin.href}
+							rel="noreferrer"
+							target="_blank"
+						>
+							LinkedIn &#8599;
+						</a>
+					</li>
+					<li>
+						<a
+							className="transition-colors hover:text-ink"
 							download
-							href={site.resumePath}
+							href={links.resume.href}
 						>
 							Resume &#8595;
 						</a>

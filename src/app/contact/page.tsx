@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { site } from "@/data/site";
+import { links, site } from "@/data/site";
 import { accent, accentStyle } from "@/lib/accents";
 
 export const metadata: Metadata = {
@@ -11,31 +11,24 @@ export const metadata: Metadata = {
 
 const channels = [
 	{
-		label: "Email",
-		value: site.email,
+		...links.email,
 		description: "The fastest way to reach me. I reply within a day.",
-		href: `mailto:${site.email}`,
 		cta: "Write to me",
-		external: false,
-		download: false,
 	},
 	{
-		label: "GitHub",
-		value: "github.com/PMARC14",
+		...links.github,
 		description: "Code, experiments, and whatever I'm currently breaking.",
-		href: site.github,
 		cta: "See the code",
-		external: true,
-		download: false,
 	},
 	{
-		label: "Resume",
-		value: "One page, PDF",
+		...links.linkedin,
+		description: "Professional background and where else I show up online.",
+		cta: "Connect",
+	},
+	{
+		...links.resume,
 		description: "Where I've worked and what I shipped, kept current.",
-		href: site.resumePath,
 		cta: "Download",
-		external: false,
-		download: true,
 	},
 ] as const;
 
@@ -81,7 +74,7 @@ export default function ContactPage() {
 				instead.
 			</p>
 
-			<ul className="mt-16 grid gap-4 sm:grid-cols-3">
+			<ul className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				{channels.map((channel, index) => (
 					<li key={channel.label} style={accentStyle(index)}>
 						<a

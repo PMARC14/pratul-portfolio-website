@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
-import { site } from "@/data/site";
+import { links, site } from "@/data/site";
 import { accent } from "@/lib/accents";
 
 export const metadata: Metadata = {
@@ -67,6 +68,39 @@ export default function AboutPage() {
 				</div>
 
 				<aside className="space-y-10">
+					<div className="relative aspect-square overflow-hidden rounded-2xl border border-line">
+						<Image
+							alt={`Photo of ${site.name}`}
+							className="object-cover"
+							fill
+							sizes="20rem"
+							src="/headshot.jpg"
+						/>
+					</div>
+
+					<ul className="flex items-center gap-5 font-mono text-muted text-xs">
+						<li>
+							<a
+								className="transition-colors hover:text-ink"
+								href={links.github.href}
+								rel="noreferrer"
+								target="_blank"
+							>
+								GitHub &#8599;
+							</a>
+						</li>
+						<li>
+							<a
+								className="transition-colors hover:text-ink"
+								href={links.linkedin.href}
+								rel="noreferrer"
+								target="_blank"
+							>
+								LinkedIn &#8599;
+							</a>
+						</li>
+					</ul>
+
 					<div className="rounded-2xl border border-line p-6">
 						<h2 className="font-mono text-muted text-xs uppercase tracking-widest">
 							Resume

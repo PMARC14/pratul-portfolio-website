@@ -30,12 +30,13 @@ All personal content lives in two files — pages render from them:
 
 | File | What's in it |
 | --- | --- |
-| [`src/data/site.ts`](src/data/site.ts) | Name, role, email, GitHub, production URL |
+| [`src/data/site.ts`](src/data/site.ts) | Name, role, email, GitHub, LinkedIn, production URL, and the shared `links` object every page's outbound links read from |
 | [`src/data/projects.ts`](src/data/projects.ts) | Projects — each entry gets a home-page row, a `/projects` row, a full breakdown page at `/projects/<slug>`, and a sitemap entry |
 
-Before going live: **replace `public/resume.pdf`** (the current file is a
-generated placeholder) and swap the `PLACEHOLDER`-marked sample projects in
-`projects.ts` for your real work.
+Before going live: **replace `public/resume.pdf`** and **`public/headshot.jpg`**
+(both are generated placeholders), set your real `linkedin` URL in `site.ts`,
+and swap the `PLACEHOLDER`-marked sample projects in `projects.ts` for your
+real work.
 
 ### Unlisted pages
 

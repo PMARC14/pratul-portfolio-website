@@ -31,9 +31,11 @@ export const metadata: Metadata = {
 	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+// Manually derived from globals.css's --bg tokens (meta theme-color can't
+// reference CSS custom properties) — keep these in sync if --bg changes.
 export const viewport: Viewport = {
 	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "#fbfbfc" },
+		{ media: "(prefers-color-scheme: light)", color: "#f9fafc" },
 		{ media: "(prefers-color-scheme: dark)", color: "#000000" },
 	],
 };
