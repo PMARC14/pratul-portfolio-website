@@ -96,7 +96,7 @@ static artifact, so they should look identical — any future dynamic features
 
 ## Testing
 
-`npm test` builds the site, then runs two Vitest suites:
+`npm test` builds the site, then runs five Vitest suites:
 
 - **`tests/content.test.ts`** — data integrity before anything builds:
   unique/URL-safe slugs, complete project fields, https-only links, the
@@ -108,6 +108,17 @@ static artifact, so they should look identical — any future dynamic features
   file**, the sitemap matches the built pages, unlisted pages are
   noindexed and linked from nowhere, and `_headers` / `resume.pdf` are
   intact.
+- **`tests/accents.test.ts`** — the red/green/blue accent rotation helper
+  cycles and wraps correctly.
+- **`tests/validate.test.ts`** — every contact-book validation rule
+  (required fields, length limits, honeypot pass-through, malformed input).
+- **`src/worker/index.test.ts`** — the `/api/entries` Worker handler
+  itself, against an in-memory D1 stand-in: GET ordering and that
+  `contact` is never returned, POST insert/validation/honeypot behavior,
+  malformed JSON, missing DB binding (503), unsupported methods (405), and
+  unknown `/api/*` routes (404). Lives under `src/worker/` rather than
+  `tests/` so it type-checks against `tsconfig.worker.json`'s Cloudflare
+  runtime types instead of the DOM lib the rest of the app uses.
 
 `npm run test:watch` runs the suites in watch mode (without rebuilding;
 run a build first for the output tests).
