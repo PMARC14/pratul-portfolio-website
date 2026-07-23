@@ -11,33 +11,32 @@
  *                           no Worker, so /api/* — the contact book — is
  *                           Workers-only and the page degrades gracefully)
  *
- * ⚠ Before the first deploy with D1:
+ * D1 setup (already done for this repo — kept here for reference):
  *   1. npx wrangler d1 create portfolio-contact-book
- *   2. Paste the real database_id below (the current one is a placeholder;
- *      local dev works with it, deploys won't).
+ *   2. Paste the printed database_id into d1_databases below.
  *   3. npm run db:migrate           (local database for wrangler dev)
  *      npm run db:migrate:remote    (production database)
  */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "pratul-portfolio",
-	"compatibility_date": "2026-06-01",
-	"main": "src/worker/index.ts",
-	"assets": {
-		// Output of `next build` (static export).
-		"directory": "./out",
-		// Lets the Worker hand non-API routes back to static assets.
-		"binding": "ASSETS",
-		// Serve Next's generated 404.html for unknown paths.
-		"not_found_handling": "404-page",
-		// /about ↔ about.html resolution to match Next's export layout.
-		"html_handling": "auto-trailing-slash"
-	},
-	"d1_databases": [
-		{
-			"binding": "portfolio_contact_book",
-			"database_name": "portfolio-contact-book",
-			"database_id": "ea98a6fb-3ede-45da-ac3d-a4bdb7b78a9b"
-		}
-	]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pratul-portfolio",
+  "compatibility_date": "2026-06-01",
+  "main": "src/worker/index.ts",
+  "assets": {
+    // Output of `next build` (static export).
+    "directory": "./out",
+    // Lets the Worker hand non-API routes back to static assets.
+    "binding": "ASSETS",
+    // Serve Next's generated 404.html for unknown paths.
+    "not_found_handling": "404-page",
+    // /about ↔ about.html resolution to match Next's export layout.
+    "html_handling": "auto-trailing-slash"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "portfolio-contact-book",
+      "database_id": "ea98a6fb-3ede-45da-ac3d-a4bdb7b78a9b"
+    }
+  ]
 }

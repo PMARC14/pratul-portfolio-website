@@ -7,11 +7,11 @@
  * @type {import("next").NextConfig}
  */
 const config = {
-	output: "export",
-	images: { unoptimized: true },
-	// Pin the workspace root: a stray lockfile in the user profile dir
-	// otherwise makes Next infer the wrong one.
-	outputFileTracingRoot: import.meta.dirname,
+  output: "export",
+  images: { unoptimized: true },
+  // Pin the workspace root: a stray lockfile in the user profile dir
+  // otherwise makes Next infer the wrong one.
+  outputFileTracingRoot: import.meta.dirname,
 };
 
 export default config;

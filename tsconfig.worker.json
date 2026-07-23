@@ -1,19 +1,19 @@
 {
-	// The Cloudflare Worker runs in workerd, not a browser/Node — it gets
-	// Cloudflare's runtime types and no DOM lib.
-	"compilerOptions": {
-		"target": "es2022",
-		"lib": ["es2022"],
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"types": ["@cloudflare/workers-types"],
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
-		"verbatimModuleSyntax": true,
-		"isolatedModules": true,
-		"moduleDetection": "force",
-		"skipLibCheck": true,
-		"noEmit": true
-	},
-	"include": ["src/worker/**/*.ts"]
+  // The Cloudflare Worker runs in workerd, not a browser/Node — it gets
+  // Cloudflare's runtime types and no DOM lib.
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["@cloudflare/workers-types"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src/worker/**/*.ts"]
 }

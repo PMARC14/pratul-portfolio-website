@@ -17,165 +17,165 @@
  * (media query + forced attribute) — keep the two blocks in sync.
  */
 :root {
-	color-scheme: light;
+  color-scheme: light;
 
-	--bg: oklch(98.6% 0.002 250);
-	--ink: oklch(19% 0.01 260);
-	--muted: oklch(45% 0.012 255);
-	--line: oklch(90.5% 0.005 250);
-	--panel: oklch(100% 0 0);
+  --bg: oklch(98.6% 0.002 250);
+  --ink: oklch(19% 0.01 260);
+  --muted: oklch(45% 0.012 255);
+  --line: oklch(90.5% 0.005 250);
+  --panel: oklch(100% 0 0);
 
-	/* Bright red · dark forest green · sky blue (darkened here for
+  /* Bright red · dark forest green · sky blue (darkened here for
 	   contrast on paper; the true light-sky reading lives in dark mode). */
-	--accent-red: oklch(56% 0.23 28);
-	--accent-green: oklch(43% 0.12 150);
-	--accent-blue: oklch(55% 0.13 238);
-	--accent: var(--accent-red);
+  --accent-red: oklch(56% 0.23 28);
+  --accent-green: oklch(43% 0.12 150);
+  --accent-blue: oklch(55% 0.13 238);
+  --accent: var(--accent-red);
 
-	--shadow-menu:
-		0 12px 32px -8px rgb(0 0 0 / 0.18), 0 4px 12px -6px rgb(0 0 0 / 0.12);
+  --shadow-menu:
+    0 12px 32px -8px rgb(0 0 0 / 0.18), 0 4px 12px -6px rgb(0 0 0 / 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) {
-		color-scheme: dark;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
 
-		--bg: oklch(0% 0 0);
-		--ink: oklch(93% 0.005 250);
-		--muted: oklch(66% 0.008 250);
-		--line: oklch(26% 0.008 250);
-		--panel: oklch(14% 0.006 250);
+    --bg: oklch(0% 0 0);
+    --ink: oklch(93% 0.005 250);
+    --muted: oklch(66% 0.008 250);
+    --line: oklch(26% 0.008 250);
+    --panel: oklch(14% 0.006 250);
 
-		/* On OLED black: red stays bright, green keeps its forest depth,
+    /* On OLED black: red stays bright, green keeps its forest depth,
 		   blue reads as true light sky. */
-		--accent-red: oklch(67% 0.235 30);
-		--accent-green: oklch(65% 0.15 150);
-		--accent-blue: oklch(80% 0.12 227);
+    --accent-red: oklch(67% 0.235 30);
+    --accent-green: oklch(65% 0.15 150);
+    --accent-blue: oklch(80% 0.12 227);
 
-		/* Shadows barely register on pure black — elevation comes from the
+    /* Shadows barely register on pure black — elevation comes from the
 		   lighter panel surface, a hairline ring, and a deep umbra. */
-		--shadow-menu:
-			0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -8px rgb(0 0 0 / 0.9);
-	}
+    --shadow-menu:
+      0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -8px rgb(0 0 0 / 0.9);
+  }
 }
 
 :root[data-theme="dark"] {
-	color-scheme: dark;
+  color-scheme: dark;
 
-	--bg: oklch(0% 0 0);
-	--ink: oklch(93% 0.005 250);
-	--muted: oklch(66% 0.008 250);
-	--line: oklch(26% 0.008 250);
+  --bg: oklch(0% 0 0);
+  --ink: oklch(93% 0.005 250);
+  --muted: oklch(66% 0.008 250);
+  --line: oklch(26% 0.008 250);
 
-	--accent-red: oklch(70% 0.18 25);
-	--accent-green: oklch(74% 0.14 158);
-	--accent-blue: oklch(78% 0.1 225);
+  --accent-red: oklch(70% 0.18 25);
+  --accent-green: oklch(74% 0.14 158);
+  --accent-blue: oklch(78% 0.1 225);
 }
 
 @theme inline {
-	--color-bg: var(--bg);
-	--color-ink: var(--ink);
-	--color-muted: var(--muted);
-	--color-line: var(--line);
-	--color-panel: var(--panel);
-	--color-accent: var(--accent);
-	--color-accent-red: var(--accent-red);
-	--color-accent-green: var(--accent-green);
-	--color-accent-blue: var(--accent-blue);
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-panel: var(--panel);
+  --color-accent: var(--accent);
+  --color-accent-red: var(--accent-red);
+  --color-accent-green: var(--accent-green);
+  --color-accent-blue: var(--accent-blue);
 
-	--shadow-menu: var(--shadow-menu);
+  --shadow-menu: var(--shadow-menu);
 
-	--font-sans:
-		var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-	--font-mono:
-		var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
-		monospace;
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
 
-	--animate-rise: rise 0.7s cubic-bezier(0.2, 0.65, 0.3, 1) both;
-	--animate-float: float 2.4s ease-in-out infinite;
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+  --animate-float: float 2.4s ease-in-out infinite;
 }
 
 @keyframes rise {
-	from {
-		opacity: 0;
-		transform: translateY(14px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes float {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(6px);
-	}
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 @keyframes scroll-fade-out {
-	to {
-		opacity: 0;
-		transform: translateY(-24px);
-	}
+  to {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
 }
 
 @keyframes scroll-dim {
-	to {
-		opacity: 0.25;
-		transform: translateY(-28px);
-	}
+  to {
+    opacity: 0.25;
+    transform: translateY(-28px);
+  }
 }
 
 @keyframes view-rise {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @layer base {
-	html {
-		scroll-behavior: smooth;
-	}
+  html {
+    scroll-behavior: smooth;
+  }
 
-	::selection {
-		background-color: var(--accent);
-		color: var(--bg);
-	}
+  ::selection {
+    background-color: var(--accent);
+    color: var(--bg);
+  }
 
-	:focus-visible {
-		outline: 2px solid var(--accent);
-		outline-offset: 3px;
-		border-radius: 2px;
-	}
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 
-	@media (prefers-reduced-motion: reduce) {
-		html {
-			scroll-behavior: auto;
-		}
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
 
-		/* !important is required: these must beat Tailwind's utilities
+    /* !important is required: these must beat Tailwind's utilities
 		   layer (e.g. animate-*), which outranks this base layer. */
-		*,
-		::before,
-		::after {
-			/* biome-ignore lint/complexity/noImportantStyles: see above */
-			animation-duration: 0.01ms !important;
-			/* biome-ignore lint/complexity/noImportantStyles: see above */
-			animation-iteration-count: 1 !important;
-			/* biome-ignore lint/complexity/noImportantStyles: see above */
-			transition-duration: 0.01ms !important;
-		}
-	}
+    *,
+    ::before,
+    ::after {
+      /* biome-ignore lint/complexity/noImportantStyles: see above */
+      animation-duration: 0.01ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: see above */
+      animation-iteration-count: 1 !important;
+      /* biome-ignore lint/complexity/noImportantStyles: see above */
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 /*
@@ -184,26 +184,26 @@
  * support — and users preferring reduced motion — get the static page.
  */
 @media (prefers-reduced-motion: no-preference) {
-	@supports (animation-timeline: scroll()) {
-		/* Hero content dims and drifts up as you scroll away from the top. */
-		.scroll-dim {
-			animation: scroll-dim linear both;
-			animation-timeline: scroll(root);
-			animation-range: 0 min(70vh, 640px);
-		}
+  @supports (animation-timeline: scroll()) {
+    /* Hero content dims and drifts up as you scroll away from the top. */
+    .scroll-dim {
+      animation: scroll-dim linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 min(70vh, 640px);
+    }
 
-		/* The "scroll" cue disappears almost immediately once you move. */
-		.scroll-cue-fade {
-			animation: scroll-fade-out linear both;
-			animation-timeline: scroll(root);
-			animation-range: 0 180px;
-		}
+    /* The "scroll" cue disappears almost immediately once you move. */
+    .scroll-cue-fade {
+      animation: scroll-fade-out linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 180px;
+    }
 
-		/* List rows / sections rise in as they enter the viewport. */
-		.reveal {
-			animation: view-rise linear both;
-			animation-timeline: view();
-			animation-range: entry 0% entry 55%;
-		}
-	}
+    /* List rows / sections rise in as they enter the viewport. */
+    .reveal {
+      animation: view-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
 }
