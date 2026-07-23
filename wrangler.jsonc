@@ -35,11 +35,9 @@
 	},
 	"d1_databases": [
 		{
-			"binding": "DB",
+			"binding": "portfolio_contact_book",
 			"database_name": "portfolio-contact-book",
-			// PLACEHOLDER — replace with the id from `wrangler d1 create`.
-			"database_id": "00000000-0000-0000-0000-000000000000",
-			"migrations_dir": "migrations"
+			"database_id": "ea98a6fb-3ede-45da-ac3d-a4bdb7b78a9b"
 		}
 	]
 }
