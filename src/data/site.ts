@@ -5,16 +5,15 @@
 export const site = {
   name: "Pratul Maddipudi",
   role: "Software Engineer",
-  email: "pmaddipudi@gmail.com",
+  email: "pratul.maddipudi@gmail.com",
   // Production domain — drives canonical URLs, Open Graph, and the sitemap.
   url: "https://pratul.maddipudi.com",
   description:
-    "Portfolio of Pratul Maddipudi — a software engineer building fast, thoughtful products for the web.",
-  resumePath: "/resume.pdf",
+    "Portfolio of Pratul Maddipudi — a software engineer working across cloud engineering, full-stack development, and applied AI/ML.",
+  resumePath: "/Pratul-Resume.pdf",
   github: "https://github.com/PMARC14",
-  // TODO: replace with your real profile URL.
-  linkedin: "https://www.linkedin.com/in/REPLACE_ME",
-  location: "United States",
+  linkedin: "https://www.linkedin.com/in/pratul-maddipudi",
+  location: "Rhode Island, USA",
 } as const;
 
 /**
@@ -40,14 +39,14 @@ export const links = {
   linkedin: {
     label: "LinkedIn",
     href: site.linkedin,
-    value: "linkedin.com/in/…",
+    value: "linkedin.com/in/pratul-maddipudi",
     external: true,
     download: false,
   },
   resume: {
     label: "Resume",
     href: site.resumePath,
-    value: "One page, PDF",
+    value: "Two pages, PDF",
     external: false,
     download: true,
   },

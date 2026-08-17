@@ -16,13 +16,13 @@ export default function Home() {
             {site.role} &middot; {site.location}
           </p>
           <h1 className="mt-5 max-w-3xl animate-rise text-balance font-semibold text-5xl tracking-tight [animation-delay:80ms] sm:text-7xl">
-            I build fast, thoughtful software for the web.
+            I build reliable software and cloud systems that just work.
           </h1>
           <p className="mt-6 max-w-xl animate-rise text-lg text-muted leading-relaxed [animation-delay:160ms]">
             I'm {site.name.split(" ")[0]} — an engineer who cares about the
-            details: clean systems, quick pages, and interfaces that feel
-            obvious. I work across the stack with TypeScript, React, and modern
-            edge infrastructure.
+            details: clean migrations, quick pages, and systems that stay simple
+            under pressure. I work across full-stack development, cloud
+            engineering, and applied AI/ML.
           </p>
           <div className="mt-10 flex animate-rise flex-wrap items-center gap-4 [animation-delay:240ms]">
             <a

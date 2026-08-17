@@ -50,7 +50,7 @@ describe("routes", () => {
     "robots.txt",
     "sitemap.xml",
     "_headers",
-    "resume.pdf",
+    site.resumePath.slice(1),
     "favicon.ico",
     ...projects.map((p) => `projects/${p.slug}.html`),
   ];
@@ -155,8 +155,8 @@ describe("unlisted pages", () => {
 });
 
 describe("deployment artifacts", () => {
-  it("resume.pdf is a real PDF", () => {
-    const buffer = readFileSync(path.join(OUT, "resume.pdf"));
+  it("resume is a real PDF", () => {
+    const buffer = readFileSync(path.join(OUT, site.resumePath.slice(1)));
     expect(buffer.subarray(0, 5).toString("latin1")).toBe("%PDF-");
   });
 
