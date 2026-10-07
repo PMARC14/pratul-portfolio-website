@@ -10,10 +10,14 @@ export const site = {
   url: "https://pratul.maddipudi.com",
   description:
     "Portfolio of Pratul Maddipudi — a software engineer working across cloud engineering, full-stack development, and applied AI/ML.",
-  resumePath: "/Pratul-Resume.pdf",
+  resumePath: "/Pratul-Maddipudi-Resume.pdf",
   github: "https://github.com/PMARC14",
   linkedin: "https://www.linkedin.com/in/pratul-maddipudi",
   location: "Rhode Island, USA",
+  // Cloudflare Web Analytics token (cookieless). Leave empty when using the
+  // dashboard's automatic setup; paste the token here only if you use the
+  // manual JS snippet. Not a secret — it ships in the page.
+  analyticsToken: "" as string,
 } as const;
 
 /**

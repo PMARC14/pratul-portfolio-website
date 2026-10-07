@@ -33,7 +33,7 @@ All personal content lives in two files — pages render from them:
 | [`src/data/site.ts`](src/data/site.ts) | Name, role, email, GitHub, LinkedIn, production URL, and the shared `links` object every page's outbound links read from |
 | [`src/data/projects.ts`](src/data/projects.ts) | Projects — each entry gets a home-page row, a `/projects` row, a full breakdown page at `/projects/<slug>`, and a sitemap entry |
 
-Before going live: keep `public/Pratul-Resume.pdf` and `public/headshot.jpg`
+Before going live: keep `public/Pratul-Maddipudi-Resume.pdf` and `public/headshot.jpg`
 current, and replace the `PLACEHOLDER`-marked `playground` sample in
 `projects.ts` (or delete it) so no placeholder copy ships.
 
@@ -41,6 +41,14 @@ The tab icon lives in `public/`: `icon.svg` (source — a white Geist "P" on
 the brand red, which brightens in dark browser themes), plus `favicon.ico`
 (16/32/48px) and `apple-touch-icon.png` (180px) rasterized from it. Don't
 let git touch these as text — `.gitattributes` marks them binary.
+
+The resume is `public/Pratul-Maddipudi-Resume.pdf`; `public/_redirects` sends
+the old `/Pratul-Resume.pdf` URL there with a 301 so existing links keep working.
+
+Analytics: enable Cloudflare Web Analytics in the dashboard (cookieless, no
+consent banner). The CSP already allows its beacon. If the dashboard's
+automatic setup doesn't report, use the manual snippet and paste its token
+into `analyticsToken` in `src/data/site.ts`.
 
 Link previews use `public/og.png` (1200×630, wired up in `src/lib/metadata.ts`);
 re-render it if your name or tagline changes.
@@ -64,7 +72,9 @@ at that path, and as long as you don't add it to the nav or
 and optionally a way to reach them (**stored, never displayed, and never
 returned by the API** — read it yourself with
 `npx wrangler d1 execute portfolio-contact-book --remote --command "SELECT * FROM entries"`).
-Spam is filtered by a honeypot field and strict length limits, validated in
+Spam is filtered by a honeypot field, a 4 KB body cap, a per-IP throttle
+(5 posts per minute — the `POST_LIMITER` binding in `wrangler.jsonc`, which
+stores nothing and needs no dashboard setup), and strict length limits, validated in
 [`src/worker/validate.ts`](src/worker/validate.ts) (unit-tested).
 
 The pieces: [`migrations/`](migrations/) (schema),

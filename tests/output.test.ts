@@ -55,6 +55,7 @@ describe("routes", () => {
     "icon.svg",
     "apple-touch-icon.png",
     "og.png",
+    "_redirects",
     ...projects.map((p) => `projects/${p.slug}.html`),
   ];
 
@@ -242,6 +243,19 @@ describe("per-page social metadata", () => {
   });
 });
 
+describe("resume", () => {
+  it("lives at the descriptive filename", () => {
+    expect(site.resumePath).toBe("/Pratul-Maddipudi-Resume.pdf");
+  });
+
+  it("old resume URL redirects permanently to the new one", () => {
+    expect(read("_redirects")).toMatch(
+      new RegExp(`^/Pratul-Resume\\.pdf\\s+${site.resumePath}\\s+301$`, "m"),
+    );
+    expect(has("Pratul-Resume.pdf")).toBe(false);
+  });
+});
+
 describe("deployment artifacts", () => {
   it("resume is a real PDF", () => {
     const buffer = readFileSync(path.join(OUT, site.resumePath.slice(1)));
@@ -252,6 +266,24 @@ describe("deployment artifacts", () => {
     const headers = read("_headers");
     expect(headers).toContain("X-Content-Type-Options: nosniff");
     expect(headers).toContain("max-age=31536000, immutable");
+  });
+
+  it("_headers lets Cloudflare Web Analytics load and report", () => {
+    const csp = read("_headers").match(/Content-Security-Policy:[^\n]*/)?.[0];
+    expect(csp).toMatch(
+      /script-src[^;]*https:\/\/static\.cloudflareinsights\.com/,
+    );
+    expect(csp).toMatch(/connect-src[^;]*https:\/\/cloudflareinsights\.com/);
+  });
+
+  it("renders the analytics beacon only when a token is configured", () => {
+    const html = read("index.html");
+    if (site.analyticsToken) {
+      expect(html).toContain("static.cloudflareinsights.com/beacon.min.js");
+      expect(html).toContain(site.analyticsToken);
+    } else {
+      expect(html).not.toContain("cloudflareinsights");
+    }
   });
 
   it("_headers locks down framing, plugins, and transport", () => {
