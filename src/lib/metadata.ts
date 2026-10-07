@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 
 import { site } from "@/data/site";
 
+/** Default share card (1200×630) used for Open Graph and Twitter previews. */
+export const ogImage = {
+  url: "/og.png",
+  width: 1200,
+  height: 630,
+  alt: `${site.name} — ${site.role}`,
+} as const;
+
 type PageMetadataInput = {
   /** Page title — the root layout's template appends the site name. */
   title: string;
@@ -35,7 +43,13 @@ export function pageMetadata({
       title: fullTitle,
       description,
       url: path,
+      images: [ogImage],
     },
-    twitter: { card: "summary", title: fullTitle, description },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: [ogImage.url],
+    },
   };
 }

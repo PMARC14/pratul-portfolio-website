@@ -235,3 +235,33 @@ describe("routing", () => {
     expect(await res.text()).toBe("asset 404");
   });
 });
+
+describe("hardening", () => {
+  it("rejects oversized bodies with 413 and stores nothing", async () => {
+    const { db, inserted } = fakeDb();
+    const huge = { ...validEntry, message: "x".repeat(10_000) };
+    const res = await callFetch(post("/api/entries", huge), env({ DB: db }));
+    expect(res.status).toBe(413);
+    expect(inserted).toHaveLength(0);
+  });
+
+  it("returns JSON 500 when the database throws", async () => {
+    const brokenDb = {
+      prepare() {
+        throw new Error("D1 down");
+      },
+    };
+    const quiet = console.error;
+    console.error = () => {};
+    try {
+      const res = await callFetch(get("/api/entries"), env({ DB: brokenDb }));
+      expect(res.status).toBe(500);
+      expect(res.headers.get("content-type")).toContain("application/json");
+      expect(await res.json()).toEqual({
+        error: "Something went wrong — try again.",
+      });
+    } finally {
+      console.error = quiet;
+    }
+  });
+});

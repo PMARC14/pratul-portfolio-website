@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { visibleProjects } from "@/data/projects";
 import { site } from "@/data/site";
+import { ogImage } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -22,11 +23,13 @@ export const metadata: Metadata = {
     title: `${site.name} — ${site.role}`,
     description: site.description,
     url: "/",
+    images: [ogImage],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: `${site.name} — ${site.role}`,
     description: site.description,
+    images: [ogImage.url],
   },
   alternates: { canonical: "/" },
   // .ico first as the universal fallback (Safari, legacy); the SVG is

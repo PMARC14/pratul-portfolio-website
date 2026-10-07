@@ -42,6 +42,9 @@ the brand red, which brightens in dark browser themes), plus `favicon.ico`
 (16/32/48px) and `apple-touch-icon.png` (180px) rasterized from it. Don't
 let git touch these as text — `.gitattributes` marks them binary.
 
+Link previews use `public/og.png` (1200×630, wired up in `src/lib/metadata.ts`);
+re-render it if your name or tagline changes.
+
 ### Unlisted pages
 
 Set `unlisted: true` on any project and its page still builds at

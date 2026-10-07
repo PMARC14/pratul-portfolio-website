@@ -54,6 +54,7 @@ describe("routes", () => {
     "favicon.ico",
     "icon.svg",
     "apple-touch-icon.png",
+    "og.png",
     ...projects.map((p) => `projects/${p.slug}.html`),
   ];
 
@@ -193,6 +194,37 @@ describe("icons", () => {
   });
 });
 
+describe("share card", () => {
+  it("og.png is a 1200×630 PNG", () => {
+    const png = readFileSync(path.join(OUT, "og.png"));
+    expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+    expect(png.readUInt32BE(16)).toBe(1200);
+    expect(png.readUInt32BE(20)).toBe(630);
+  });
+
+  it.each(
+    htmlFiles().filter((f) => f !== "404.html"),
+  )("%s advertises the card for Open Graph and Twitter", (file) => {
+    const html = read(file);
+    expect(html).toContain(`property="og:image" content="${site.url}/og.png"`);
+    expect(html).toContain('name="twitter:card" content="summary_large_image"');
+  });
+});
+
+describe("home page structured data", () => {
+  it("embeds a valid Person JSON-LD block", () => {
+    const match = read("index.html").match(
+      /<script type="application\/ld\+json">([^<]+)<\/script>/,
+    );
+    expect(match, "JSON-LD script missing").not.toBeNull();
+    const data = JSON.parse(match?.[1] ?? "{}");
+    expect(data["@type"]).toBe("Person");
+    expect(data.name).toBe(site.name);
+    expect(data.sameAs).toContain(site.github);
+    expect(JSON.stringify(data)).not.toContain(site.email);
+  });
+});
+
 describe("per-page social metadata", () => {
   it.each([
     ["about.html", "/about"],
@@ -220,6 +252,16 @@ describe("deployment artifacts", () => {
     const headers = read("_headers");
     expect(headers).toContain("X-Content-Type-Options: nosniff");
     expect(headers).toContain("max-age=31536000, immutable");
+  });
+
+  it("_headers locks down framing, plugins, and transport", () => {
+    const headers = read("_headers");
+    expect(headers).toContain("X-Frame-Options: DENY");
+    expect(headers).toContain("Strict-Transport-Security:");
+    expect(headers).toMatch(
+      /Content-Security-Policy:[^\n]*frame-ancestors 'none'/,
+    );
+    expect(headers).toMatch(/Content-Security-Policy:[^\n]*object-src 'none'/);
   });
 
   it("robots.txt points at the sitemap", () => {
