@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { visibleProjects } from "@/data/projects";
 import { site } from "@/data/site";
+import { ogImage } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -22,13 +23,24 @@ export const metadata: Metadata = {
     title: `${site.name} — ${site.role}`,
     description: site.description,
     url: "/",
+    images: [ogImage],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: `${site.name} — ${site.role}`,
     description: site.description,
+    images: [ogImage.url],
   },
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  alternates: { canonical: "/" },
+  // .ico first as the universal fallback (Safari, legacy); the SVG is
+  // picked up by browsers that support it and follows the dark scheme.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
 };
 
 // Manually derived from globals.css's --bg tokens (meta theme-color can't

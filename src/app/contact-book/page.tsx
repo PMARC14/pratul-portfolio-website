@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 
 import { accent } from "@/lib/accents";
+import { pageMetadata } from "@/lib/metadata";
 import { ContactBook } from "./contact-book";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact book",
   description:
     "Leave a note — a guestbook backed by SQLite (Cloudflare D1) at the edge.",
-};
+  path: "/contact-book",
+});
 
 export default function ContactBookPage() {
   return (

@@ -3,11 +3,13 @@ import Link from "next/link";
 
 import { links, site } from "@/data/site";
 import { accent, accentStyle } from "@/lib/accents";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description: `Get in touch with ${site.name} — email, GitHub, or grab the resume.`,
-};
+  path: "/contact",
+});
 
 const channels = [
   {

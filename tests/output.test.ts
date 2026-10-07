@@ -52,6 +52,9 @@ describe("routes", () => {
     "_headers",
     site.resumePath.slice(1),
     "favicon.ico",
+    "icon.svg",
+    "apple-touch-icon.png",
+    "og.png",
     ...projects.map((p) => `projects/${p.slug}.html`),
   ];
 
@@ -154,6 +157,91 @@ describe("unlisted pages", () => {
   });
 });
 
+describe("icons", () => {
+  const icon = () => readFileSync(path.join(OUT, "favicon.ico"));
+
+  it("favicon.ico is a structurally valid multi-size ICO", () => {
+    // Guards against the file being mangled by line-ending normalization.
+    const buffer = icon();
+    expect(buffer.readUInt16LE(0), "reserved").toBe(0);
+    expect(buffer.readUInt16LE(2), "type (1 = icon)").toBe(1);
+    const count = buffer.readUInt16LE(4);
+    expect(count).toBeGreaterThanOrEqual(2);
+    for (let i = 0; i < count; i++) {
+      const entry = 6 + i * 16;
+      const size = buffer.readUInt32LE(entry + 8);
+      const offset = buffer.readUInt32LE(entry + 12);
+      expect(offset + size, `image ${i} overruns the file`).toBeLessThanOrEqual(
+        buffer.length,
+      );
+    }
+  });
+
+  it("apple-touch-icon.png is a real 180×180 PNG", () => {
+    const png = readFileSync(path.join(OUT, "apple-touch-icon.png"));
+    expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+    expect(png.readUInt32BE(16)).toBe(180);
+    expect(png.readUInt32BE(20)).toBe(180);
+  });
+
+  it("every page links the favicon, SVG icon, and touch icon", () => {
+    for (const file of htmlFiles().filter((f) => f !== "404.html")) {
+      const html = read(file);
+      expect(html, file).toContain('href="/favicon.ico"');
+      expect(html, file).toContain('href="/icon.svg"');
+      expect(html, file).toContain('href="/apple-touch-icon.png"');
+    }
+  });
+});
+
+describe("share card", () => {
+  it("og.png is a 1200×630 PNG", () => {
+    const png = readFileSync(path.join(OUT, "og.png"));
+    expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+    expect(png.readUInt32BE(16)).toBe(1200);
+    expect(png.readUInt32BE(20)).toBe(630);
+  });
+
+  it.each(
+    htmlFiles().filter((f) => f !== "404.html"),
+  )("%s advertises the card for Open Graph and Twitter", (file) => {
+    const html = read(file);
+    expect(html).toContain(`property="og:image" content="${site.url}/og.png"`);
+    expect(html).toContain('name="twitter:card" content="summary_large_image"');
+  });
+});
+
+describe("home page structured data", () => {
+  it("embeds a valid Person JSON-LD block", () => {
+    const match = read("index.html").match(
+      /<script type="application\/ld\+json">([^<]+)<\/script>/,
+    );
+    expect(match, "JSON-LD script missing").not.toBeNull();
+    const data = JSON.parse(match?.[1] ?? "{}");
+    expect(data["@type"]).toBe("Person");
+    expect(data.name).toBe(site.name);
+    expect(data.sameAs).toContain(site.github);
+    expect(JSON.stringify(data)).not.toContain(site.email);
+  });
+});
+
+describe("per-page social metadata", () => {
+  it.each([
+    ["about.html", "/about"],
+    ["projects.html", "/projects"],
+    ["contact.html", "/contact"],
+    ["contact-book.html", "/contact-book"],
+    ...projects.map((p) => [`projects/${p.slug}.html`, `/projects/${p.slug}`]),
+  ])("%s has its own canonical and og:url", (file, route) => {
+    const html = read(file as string);
+    expect(html).toContain(`rel="canonical" href="${site.url}${route}"`);
+    expect(html).toContain(`property="og:url" content="${site.url}${route}"`);
+    expect(html).not.toContain(
+      `property="og:title" content="${site.name} — ${site.role}"`,
+    );
+  });
+});
+
 describe("deployment artifacts", () => {
   it("resume is a real PDF", () => {
     const buffer = readFileSync(path.join(OUT, site.resumePath.slice(1)));
@@ -164,6 +252,16 @@ describe("deployment artifacts", () => {
     const headers = read("_headers");
     expect(headers).toContain("X-Content-Type-Options: nosniff");
     expect(headers).toContain("max-age=31536000, immutable");
+  });
+
+  it("_headers locks down framing, plugins, and transport", () => {
+    const headers = read("_headers");
+    expect(headers).toContain("X-Frame-Options: DENY");
+    expect(headers).toContain("Strict-Transport-Security:");
+    expect(headers).toMatch(
+      /Content-Security-Policy:[^\n]*frame-ancestors 'none'/,
+    );
+    expect(headers).toMatch(/Content-Security-Policy:[^\n]*object-src 'none'/);
   });
 
   it("robots.txt points at the sitemap", () => {

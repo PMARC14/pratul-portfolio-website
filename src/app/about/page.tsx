@@ -3,11 +3,13 @@ import Image from "next/image";
 
 import { links, site } from "@/data/site";
 import { accent, accentStyle } from "@/lib/accents";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
-  description: `Who ${site.name} is, what he works with, and where to get his resume.`,
-};
+  description: `Background, skills, and experience of ${site.name}, plus a downloadable resume.`,
+  path: "/about",
+});
 
 const capabilities = [
   {

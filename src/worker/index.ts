@@ -19,6 +19,9 @@ interface Env {
 }
 
 const MAX_ENTRIES = 50;
+// Valid payloads are well under 1 KB (name 60 + message 500 + contact
+// 120 chars); anything past this is junk and never gets parsed.
+const MAX_BODY_BYTES = 4096;
 
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -46,9 +49,14 @@ async function handleEntries(request: Request, env: Env): Promise<Response> {
   }
 
   if (request.method === "POST") {
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) {
+      return json({ error: "Request body is too large." }, 413);
+    }
+
     let body: unknown;
     try {
-      body = await request.json();
+      body = JSON.parse(raw);
     } catch {
       return json({ error: "Body must be JSON." }, 400);
     }
@@ -79,7 +87,14 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/entries") {
-      return handleEntries(request, env);
+      try {
+        return await handleEntries(request, env);
+      } catch (error) {
+        // A D1 hiccup shouldn't surface as a platform error page: the
+        // client expects JSON from this route.
+        console.error("contact book request failed", error);
+        return json({ error: "Something went wrong — try again." }, 500);
+      }
     }
     if (url.pathname.startsWith("/api/")) {
       return json({ error: "Not found." }, 404);

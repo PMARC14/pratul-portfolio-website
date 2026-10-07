@@ -66,10 +66,14 @@
   --ink: oklch(93% 0.005 250);
   --muted: oklch(66% 0.008 250);
   --line: oklch(26% 0.008 250);
+  --panel: oklch(14% 0.006 250);
 
-  --accent-red: oklch(70% 0.18 25);
-  --accent-green: oklch(74% 0.14 158);
-  --accent-blue: oklch(78% 0.1 225);
+  --accent-red: oklch(67% 0.235 30);
+  --accent-green: oklch(65% 0.15 150);
+  --accent-blue: oklch(80% 0.12 227);
+
+  --shadow-menu:
+    0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -8px rgb(0 0 0 / 0.9);
 }
 
 @theme inline {

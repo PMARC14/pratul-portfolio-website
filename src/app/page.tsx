@@ -5,9 +5,26 @@ import { featuredProjects } from "@/data/projects";
 import { site } from "@/data/site";
 import { accent } from "@/lib/accents";
 
+// Structured data so search engines can connect the name to the profiles.
+// Email is intentionally left out to keep it away from scrapers.
+const personJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  jobTitle: site.role,
+  url: site.url,
+  image: `${site.url}/headshot.jpg`,
+  sameAs: [site.github, site.linkedin],
+}).replace(/</g, "\\u003c");
+
 export default function Home() {
   return (
     <>
+      <script
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: static JSON-LD from our own data, angle brackets escaped
+        dangerouslySetInnerHTML={{ __html: personJsonLd }}
+        type="application/ld+json"
+      />
       {/* Hero fills the first viewport; its content dims and drifts
 			    upward as you scroll (scroll-driven, reduced-motion aware). */}
       <section className="relative mx-auto flex min-h-[calc(100dvh-3.75rem)] w-full max-w-5xl flex-col justify-center px-6 py-20">
