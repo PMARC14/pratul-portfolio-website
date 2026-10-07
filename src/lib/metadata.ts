@@ -1,0 +1,41 @@
+import type { Metadata } from "next";
+
+import { site } from "@/data/site";
+
+type PageMetadataInput = {
+  /** Page title — the root layout's template appends the site name. */
+  title: string;
+  description: string;
+  /** Site-relative path, e.g. "/about" (resolved against `metadataBase`). */
+  path: string;
+  robots?: Metadata["robots"];
+};
+
+/**
+ * Per-page metadata with matching canonical, Open Graph, and Twitter
+ * fields. Next inherits a parent's `openGraph` wholesale when a page
+ * doesn't set its own, which would give every page the home page's
+ * title, description, and `og:url` in link previews.
+ */
+export function pageMetadata({
+  title,
+  description,
+  path,
+  robots,
+}: PageMetadataInput): Metadata {
+  const fullTitle = `${title} — ${site.name}`;
+  return {
+    title,
+    description,
+    robots,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "website",
+      siteName: site.name,
+      title: fullTitle,
+      description,
+      url: path,
+    },
+    twitter: { card: "summary", title: fullTitle, description },
+  };
+}

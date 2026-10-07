@@ -3,12 +3,14 @@ import type { Metadata } from "next";
 import { ProjectList } from "@/components/project-list";
 import { visibleProjects } from "@/data/projects";
 import { accent } from "@/lib/accents";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Projects",
   description:
     "Detailed breakdowns of selected projects — the problem, the approach, and what shipped.",
-};
+  path: "/projects",
+});
 
 export default function ProjectsPage() {
   return (

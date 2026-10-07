@@ -1,0 +1,19 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <title>Pratul Maddipudi</title>
+  <style>
+  .bg {
+    fill: #db000e;
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg {
+      fill: #ff402d;
+    }
+  }
+  </style>
+  <rect class="bg" height="64" rx="14" width="64" />
+  <path
+    d="M62 0V710H366Q500 710 576.5 645.0Q653 580 653 467Q653 393 618.5 338.5Q584 284 519.5 254.5Q455 225 366 225H258V0ZM258 382H351Q397 382 425.0 403.5Q453 425 453 467Q453 509 425.5 531.0Q398 553 351 553H258Z"
+    fill="#fff"
+    transform="translate(12.87 50.99) scale(0.0535 -0.0535)"
+  />
+</svg>

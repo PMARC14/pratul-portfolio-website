@@ -28,7 +28,16 @@ export const metadata: Metadata = {
     title: `${site.name} — ${site.role}`,
     description: site.description,
   },
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  alternates: { canonical: "/" },
+  // .ico first as the universal fallback (Safari, legacy); the SVG is
+  // picked up by browsers that support it and follows the dark scheme.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
 };
 
 // Manually derived from globals.css's --bg tokens (meta theme-color can't

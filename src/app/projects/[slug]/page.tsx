@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getProject, projects, visibleProjects } from "@/data/projects";
 import { accentStyle } from "@/lib/accents";
+import { pageMetadata } from "@/lib/metadata";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -23,12 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!project) {
     return {};
   }
-  return {
+  return pageMetadata({
     title: project.title,
     description: project.summary,
+    path: `/projects/${project.slug}`,
     // Keep unlisted pages out of search engines; link-only access.
     robots: project.unlisted ? { index: false, follow: false } : undefined,
-  };
+  });
 }
 
 export default async function ProjectPage({ params }: Props) {

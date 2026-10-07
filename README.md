@@ -33,10 +33,14 @@ All personal content lives in two files — pages render from them:
 | [`src/data/site.ts`](src/data/site.ts) | Name, role, email, GitHub, LinkedIn, production URL, and the shared `links` object every page's outbound links read from |
 | [`src/data/projects.ts`](src/data/projects.ts) | Projects — each entry gets a home-page row, a `/projects` row, a full breakdown page at `/projects/<slug>`, and a sitemap entry |
 
-Before going live: **replace `public/resume.pdf`** and **`public/headshot.jpg`**
-(both are generated placeholders), set your real `linkedin` URL in `site.ts`,
-and swap the `PLACEHOLDER`-marked sample projects in `projects.ts` for your
-real work.
+Before going live: keep `public/Pratul-Resume.pdf` and `public/headshot.jpg`
+current, and replace the `PLACEHOLDER`-marked `playground` sample in
+`projects.ts` (or delete it) so no placeholder copy ships.
+
+The tab icon lives in `public/`: `icon.svg` (source — a white Geist "P" on
+the brand red, which brightens in dark browser themes), plus `favicon.ico`
+(16/32/48px) and `apple-touch-icon.png` (180px) rasterized from it. Don't
+let git touch these as text — `.gitattributes` marks them binary.
 
 ### Unlisted pages
 
@@ -107,8 +111,10 @@ static artifact, so they should look identical — any future dynamic features
   Cloudflare serves: every route builds, every page has one `<h1>`, a
   title, and a meta description, **every internal link resolves to a real
   file**, the sitemap matches the built pages, unlisted pages are
-  noindexed and linked from nowhere, and `_headers` / `resume.pdf` are
-  intact.
+  noindexed and linked from nowhere, icons are valid, each page has its own
+  canonical/`og:url`, and `_headers` / the resume PDF are intact.
+- **`tests/theme.test.ts`** — the forced-dark and system-dark palettes in
+  `globals.css` stay identical.
 - **`tests/accents.test.ts`** — the red/green/blue accent rotation helper
   cycles and wraps correctly.
 - **`tests/validate.test.ts`** — every contact-book validation rule
