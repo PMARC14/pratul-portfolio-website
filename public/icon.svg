@@ -2,11 +2,11 @@
   <title>Pratul Maddipudi</title>
   <style>
   .bg {
-    fill: #db000e;
+    fill: #e0001c;
   }
   @media (prefers-color-scheme: dark) {
     .bg {
-      fill: #ff402d;
+      fill: #ff1f3d;
     }
   }
   </style>

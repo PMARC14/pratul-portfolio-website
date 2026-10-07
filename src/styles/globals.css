@@ -27,7 +27,7 @@
 
   /* Bright red · dark forest green · sky blue (darkened here for
 	   contrast on paper; the true light-sky reading lives in dark mode). */
-  --accent-red: oklch(56% 0.23 28);
+  --accent-red: oklch(57.1% 0.232 26.5);
   --accent-green: oklch(43% 0.12 150);
   --accent-blue: oklch(55% 0.13 238);
   --accent: var(--accent-red);
@@ -48,7 +48,7 @@
 
     /* On OLED black: red stays bright, green keeps its forest depth,
 		   blue reads as true light sky. */
-    --accent-red: oklch(67% 0.235 30);
+    --accent-red: oklch(63.9% 0.246 22.9);
     --accent-green: oklch(65% 0.15 150);
     --accent-blue: oklch(80% 0.12 227);
 
@@ -68,7 +68,7 @@
   --line: oklch(26% 0.008 250);
   --panel: oklch(14% 0.006 250);
 
-  --accent-red: oklch(67% 0.235 30);
+  --accent-red: oklch(63.9% 0.246 22.9);
   --accent-green: oklch(65% 0.15 150);
   --accent-blue: oklch(80% 0.12 227);
 
