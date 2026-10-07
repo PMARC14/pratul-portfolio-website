@@ -1,0 +1,4 @@
+# Honored by both Cloudflare Workers static assets and Cloudflare Pages.
+# The resume used to live at /Pratul-Resume.pdf — keep old links (LinkedIn,
+# applications, emails) working.
+/Pratul-Resume.pdf /Pratul-Maddipudi-Resume.pdf 301

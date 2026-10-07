@@ -92,6 +92,13 @@ export default function RootLayout({
           {children}
         </main>
         <SiteFooter />
+        {site.analyticsToken && (
+          <script
+            data-cf-beacon={JSON.stringify({ token: site.analyticsToken })}
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+          />
+        )}
       </body>
     </html>
   );

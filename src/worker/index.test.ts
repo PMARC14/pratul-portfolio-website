@@ -79,7 +79,13 @@ const notFoundAssets = {
   },
 };
 
-function env(overrides: Partial<{ DB: unknown; ASSETS: unknown }> = {}) {
+function env(
+  overrides: Partial<{
+    DB: unknown;
+    ASSETS: unknown;
+    POST_LIMITER: unknown;
+  }> = {},
+) {
   return {
     DB: fakeDb().db,
     ASSETS: notFoundAssets,
@@ -263,5 +269,68 @@ describe("hardening", () => {
     } finally {
       console.error = quiet;
     }
+  });
+});
+
+describe("rate limiting", () => {
+  function limiter(allow: boolean) {
+    const keys: string[] = [];
+    return {
+      keys,
+      binding: {
+        async limit({ key }: { key: string }) {
+          keys.push(key);
+          return { success: allow };
+        },
+      },
+    };
+  }
+
+  it("returns 429 with Retry-After and stores nothing when throttled", async () => {
+    const { db, inserted } = fakeDb();
+    const { binding } = limiter(false);
+    const res = await callFetch(
+      post("/api/entries", validEntry),
+      env({ DB: db, POST_LIMITER: binding }),
+    );
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toBe("60");
+    expect(res.headers.get("content-type")).toContain("application/json");
+    expect(inserted).toHaveLength(0);
+  });
+
+  it("keys the limiter by the connecting IP and lets allowed posts through", async () => {
+    const { db, inserted } = fakeDb();
+    const { binding, keys } = limiter(true);
+    const request = new Request("https://example.com/api/entries", {
+      method: "POST",
+      body: JSON.stringify(validEntry),
+      headers: {
+        "content-type": "application/json",
+        "cf-connecting-ip": "203.0.113.7",
+      },
+    });
+    const res = await callFetch(
+      request,
+      env({ DB: db, POST_LIMITER: binding }),
+    );
+    expect(res.status).toBe(201);
+    expect(keys).toEqual(["203.0.113.7"]);
+    expect(inserted).toHaveLength(1);
+  });
+
+  it("never throttles reads", async () => {
+    const { binding, keys } = limiter(false);
+    const res = await callFetch(
+      get("/api/entries"),
+      env({ POST_LIMITER: binding }),
+    );
+    expect(res.status).toBe(200);
+    expect(keys).toHaveLength(0);
+  });
+
+  it("still works where the binding is absent (Pages fallback, tests)", async () => {
+    const res = await callFetch(post("/api/entries", validEntry), env());
+    expect(res.status).toBe(201);
   });
 });

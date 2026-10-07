@@ -16,6 +16,8 @@ import { validateEntry } from "./validate";
 interface Env {
   DB: D1Database;
   ASSETS: Fetcher;
+  /** Per-IP throttle for posting (see `ratelimits` in wrangler.jsonc). Optional: absent on non-Workers hosts. */
+  POST_LIMITER?: RateLimit;
 }
 
 const MAX_ENTRIES = 50;
@@ -23,10 +25,15 @@ const MAX_ENTRIES = 50;
 // 120 chars); anything past this is junk and never gets parsed.
 const MAX_BODY_BYTES = 4096;
 
-function json(data: unknown, status = 200): Response {
+function json(
+  data: unknown,
+  status = 200,
+  extraHeaders: Record<string, string> = {},
+): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
+      ...extraHeaders,
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
       "x-content-type-options": "nosniff",
@@ -49,6 +56,21 @@ async function handleEntries(request: Request, env: Env): Promise<Response> {
   }
 
   if (request.method === "POST") {
+    // Throttle before doing any work. Cloudflare always sets
+    // CF-Connecting-IP in production; the key lives only in the rate
+    // limiter and is never stored with the entry.
+    if (env.POST_LIMITER) {
+      const key = request.headers.get("cf-connecting-ip") ?? "local";
+      const { success } = await env.POST_LIMITER.limit({ key });
+      if (!success) {
+        return json(
+          { error: "Too many entries — please wait a minute and try again." },
+          429,
+          { "retry-after": "60" },
+        );
+      }
+    }
+
     const raw = await request.text();
     if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) {
       return json({ error: "Request body is too large." }, 413);
