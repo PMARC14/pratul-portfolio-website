@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -93,6 +94,23 @@ export default async function ProjectPage({ params }: Props) {
           <dd className="mt-2 text-sm">{project.stack.join(" · ")}</dd>
         </div>
       </dl>
+
+      {project.images && project.images.length > 0 && (
+        <ul className="mt-14 grid items-start gap-6 sm:grid-cols-2">
+          {project.images.map((image) => (
+            <li key={image.src}>
+              <Image
+                alt={image.alt}
+                className="h-auto w-full rounded-2xl border border-line"
+                height={image.height}
+                sizes="(min-width: 1024px) 480px, (min-width: 640px) 45vw, 100vw"
+                src={image.src}
+                width={image.width}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
 
       <section aria-labelledby="overview-heading" className="mt-14 max-w-2xl">
         <h2

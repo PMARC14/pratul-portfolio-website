@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -61,6 +61,23 @@ describe("project data", () => {
       expect(link.href).toMatch(/^https:\/\//);
       expect(link.label.trim()).not.toBe("");
     }
+  });
+
+  it.each(
+    projects.flatMap((p) => (p.images ?? []).map((i) => [p.slug, i] as const)),
+  )("%s image %#  exists, has alt text, and declares its real size", (_slug, image) => {
+    expect(image.alt.trim().length).toBeGreaterThan(20);
+    const file = path.join(
+      import.meta.dirname,
+      "..",
+      "public",
+      image.src.slice(1),
+    );
+    expect(existsSync(file), `${image.src} missing from public/`).toBe(true);
+    const png = readFileSync(file);
+    expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+    expect(png.readUInt32BE(16), "declared width").toBe(image.width);
+    expect(png.readUInt32BE(20), "declared height").toBe(image.height);
   });
 
   it("keeps unlisted projects out of the visible and featured sets", () => {

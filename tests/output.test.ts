@@ -195,6 +195,25 @@ describe("icons", () => {
   });
 });
 
+describe("project screenshots", () => {
+  const withImages = projects.filter((p) => (p.images ?? []).length > 0);
+
+  it("at least one project showcases screenshots", () => {
+    expect(withImages.length).toBeGreaterThan(0);
+  });
+
+  it.each(
+    withImages.map((p) => [p.slug, p] as const),
+  )("%s page renders every screenshot with alt text", (slug, project) => {
+    const html = read(`projects/${slug}.html`);
+    for (const image of project.images ?? []) {
+      expect(html, image.src).toContain(`src="${image.src}"`);
+      expect(html).toContain(`alt="${image.alt}"`);
+      expect(has(image.src.slice(1))).toBe(true);
+    }
+  });
+});
+
 describe("share card", () => {
   it("og.png is a 1200×630 PNG", () => {
     const png = readFileSync(path.join(OUT, "og.png"));

@@ -1,6 +1,8 @@
 /**
  * ─────────────────────────────────────────────────────────────────────
- *  PLACEHOLDER CONTENT — replace with your real work.
+ *  Project content. Entries marked PLACEHOLDER are samples to replace.
+ *  Order matters: it's the display order everywhere (home, /projects,
+ *  header dropdown, and prev/next links).
  *
  *  Each entry here automatically gets:
  *    • a row on the home page (when `featured` is true)
@@ -17,6 +19,16 @@ export type ProjectLink = {
   href: string;
 };
 
+export type ProjectImage = {
+  /** Site-relative path under public/, e.g. "/projects/foo.png". */
+  src: string;
+  /** Describe what the screenshot shows (read by screen readers). */
+  alt: string;
+  /** Intrinsic pixel size — reserves layout space so the page doesn't jump. */
+  width: number;
+  height: number;
+};
+
 export type Project = {
   /** URL segment: /projects/<slug> */
   slug: string;
@@ -31,6 +43,8 @@ export type Project = {
   /** Concrete outcomes / decisions worth bragging about. */
   highlights: string[];
   links?: ProjectLink[];
+  /** Optional screenshots shown under the title on the breakdown page. */
+  images?: ProjectImage[];
   /** Featured projects appear on the home page. */
   featured: boolean;
   /**
@@ -43,6 +57,54 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    slug: "hotline",
+    title: "Hotline",
+    year: "2026",
+    summary:
+      "A native Windows 11 AI panel on the Copilot key — fast, private, and wired to whichever AI you choose.",
+    overview: [
+      "Windows 11 keyboards ship with a Copilot key that only opens Microsoft's assistant. Hotline takes it over: one press opens a native popup on the monitor you're working on, focused and ready to type, and it talks to the AI you pick — your existing Claude Code or Antigravity CLI sign-ins, an Anthropic, Gemini, or OpenAI-compatible API key, or a local model behind an OpenAI-style server like llama.cpp.",
+      "It's a WinUI 3 app with no embedded webview, built on a UI-free .NET core. Answers render as Markdown with tables, copyable code, math, and inline SVG. It pulls in context without grabbing your clipboard — the text you had selected arrives through UI Automation, and screenshots fall back to Windows' offline OCR for models that can't see images. Tools come from your MCP servers; read-only tools run on their own and anything else asks first. Settings, prompts, quick actions, and memory are all plain files, and API keys live in Windows Credential Locker.",
+      "Hotline has no server, accounts, or telemetry, and ships with a written privacy policy that says exactly what leaves your PC. It's pre-1.0 and used daily, so expect rough edges: Windows 11 only (x64 and ARM64), Apache-2.0, and developed in the open by one person.",
+    ],
+    role: "Design & engineering (solo)",
+    stack: ["C#", ".NET 10", "WinUI 3", "MSIX", "MCP", "GitHub Actions"],
+    highlights: [
+      "Provider-agnostic by design: Claude Code and Antigravity CLI sign-ins, three API families, and local models, switchable from an effort → model → provider picker in the bar.",
+      "Native and light: WinUI 3 with acrylic instead of a webview, with all logic that doesn't touch the UI split into a separately tested .NET library.",
+      "Reads context respectfully: selected text over UI Automation, screenshots of a window, screen, or dragged region, and on-device OCR — nothing is sent until you press Enter.",
+      "Tools with guardrails: MCP servers and Windows agent connectors, where read-only tools run and everything else asks Allow once / Always / Deny in the panel.",
+      "Private by construction: no telemetry, keys in Credential Locker and sent only over https, and a published privacy policy.",
+      "Shipped like a product: 500+ unit tests, an end-to-end smoke test that drives the Copilot key, hotkey, and protocol links, CI on every PR, and automated x64 + ARM64 MSIX releases.",
+    ],
+    links: [
+      { label: "Source on GitHub", href: "https://github.com/PMARC14/Hotline" },
+      {
+        label: "Releases",
+        href: "https://github.com/PMARC14/Hotline/releases",
+      },
+      {
+        label: "Privacy policy",
+        href: "https://github.com/PMARC14/Hotline/blob/main/PRIVACY.md",
+      },
+    ],
+    images: [
+      {
+        src: "/projects/hotline-panel.png",
+        alt: "The Hotline panel answering a question about the area of a circle, with a formula, a Python code block with a Copy button, and a results table. The bar below shows effort, model, and provider pickers.",
+        width: 720,
+        height: 763,
+      },
+      {
+        src: "/projects/hotline-settings.png",
+        alt: "The Hotline settings window on the General page, with options for what a short and long press of the Copilot key do, an extra hotkey, and window behavior.",
+        width: 900,
+        height: 668,
+      },
+    ],
+    featured: true,
+  },
   {
     slug: "portfolio",
     title: "This Website",
