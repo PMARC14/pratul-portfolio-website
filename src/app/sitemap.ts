@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: site.url, priority: 1 },
     { url: `${site.url}/projects`, priority: 0.8 },
+    { url: `${site.url}/hotline`, priority: 0.8 },
     { url: `${site.url}/about`, priority: 0.8 },
     { url: `${site.url}/contact`, priority: 0.7 },
     { url: `${site.url}/contact-book`, priority: 0.5 },

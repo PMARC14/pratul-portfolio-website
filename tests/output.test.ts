@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
-
+import { hotline } from "@/data/hotline";
 import { projects, visibleProjects } from "@/data/projects";
 import { site } from "@/data/site";
 
@@ -46,6 +46,7 @@ describe("routes", () => {
     "projects.html",
     "contact.html",
     "contact-book.html",
+    "hotline.html",
     "404.html",
     "robots.txt",
     "sitemap.xml",
@@ -191,6 +192,60 @@ describe("icons", () => {
       expect(html, file).toContain('href="/favicon.ico"');
       expect(html, file).toContain('href="/icon.svg"');
       expect(html, file).toContain('href="/apple-touch-icon.png"');
+    }
+  });
+});
+
+describe("hotline install page", () => {
+  const html = () => read("hotline.html");
+
+  it("links the download, the repo, and the privacy policy", () => {
+    for (const href of [
+      hotline.latestRelease,
+      hotline.repo,
+      hotline.privacy,
+      hotline.license,
+    ]) {
+      expect(html()).toContain(`href="${href}"`);
+    }
+  });
+
+  it("explains how to assign the Copilot key and states the requirements", () => {
+    expect(html()).toContain("Customize Copilot key on keyboard");
+    expect(html()).toContain(hotline.requirements);
+  });
+
+  it("is listed in the sitemap and cross-linked with the case study", () => {
+    expect(read("sitemap.xml")).toContain(`${site.url}${hotline.path}`);
+    expect(html()).toContain('href="/projects/hotline"');
+    expect(read("projects/hotline.html")).toContain(`href="${hotline.path}"`);
+  });
+
+  it("every external link opens safely", () => {
+    const anchors = html().match(/<a [^>]*href="https:[^>]*>/g) ?? [];
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const anchor of anchors) {
+      expect(anchor, anchor).toContain('rel="noreferrer"');
+      expect(anchor, anchor).toContain('target="_blank"');
+    }
+  });
+});
+
+describe("project screenshots", () => {
+  const withImages = projects.filter((p) => (p.images ?? []).length > 0);
+
+  it("at least one project showcases screenshots", () => {
+    expect(withImages.length).toBeGreaterThan(0);
+  });
+
+  it.each(
+    withImages.map((p) => [p.slug, p] as const),
+  )("%s page renders every screenshot with alt text", (slug, project) => {
+    const html = read(`projects/${slug}.html`);
+    for (const image of project.images ?? []) {
+      expect(html, image.src).toContain(`src="${image.src}"`);
+      expect(html).toContain(`alt="${image.alt}"`);
+      expect(has(image.src.slice(1))).toBe(true);
     }
   });
 });

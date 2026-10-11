@@ -22,11 +22,11 @@ export default function ProjectsPage() {
         Projects
       </p>
       <h1 className="mt-4 max-w-2xl text-balance font-semibold text-4xl tracking-tight sm:text-6xl">
-        Case studies, not screenshots.
+        Things I've built and shipped.
       </h1>
       <p className="mt-5 max-w-xl text-lg text-muted leading-relaxed">
-        Every project below links to a full breakdown — the problem it solves,
-        the decisions behind it, and what I'd do differently now.
+        Desktop apps, game mods, and cloud migrations — each one links to a full
+        breakdown of what it does, how it's built, and where to find it.
       </p>
 
       <div className="mt-14">

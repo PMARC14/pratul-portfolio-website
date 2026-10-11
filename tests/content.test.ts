@@ -1,7 +1,7 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-
+import { hotline } from "@/data/hotline";
 import { featuredProjects, projects, visibleProjects } from "@/data/projects";
 import { site } from "@/data/site";
 
@@ -60,6 +60,52 @@ describe("project data", () => {
     for (const link of project.links ?? []) {
       expect(link.href).toMatch(/^https:\/\//);
       expect(link.label.trim()).not.toBe("");
+    }
+  });
+
+  it.each(
+    projects.flatMap((p) => (p.images ?? []).map((i) => [p.slug, i] as const)),
+  )("%s image %#  exists, has alt text, and declares its real size", (_slug, image) => {
+    expect(image.alt.trim().length).toBeGreaterThan(20);
+    const file = path.join(
+      import.meta.dirname,
+      "..",
+      "public",
+      image.src.slice(1),
+    );
+    expect(existsSync(file), `${image.src} missing from public/`).toBe(true);
+    const png = readFileSync(file);
+    expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+    expect(png.readUInt32BE(16), "declared width").toBe(image.width);
+    expect(png.readUInt32BE(20), "declared height").toBe(image.height);
+  });
+
+  it("call-to-action buttons point at pages on this site", () => {
+    for (const project of projects) {
+      if (!project.cta) continue;
+      expect(project.cta.href).toMatch(/^\/[a-z0-9-/]*$/);
+      expect(project.cta.label.trim()).not.toBe("");
+    }
+  });
+
+  it("hotline's case study links its install page and shared URLs", () => {
+    const project = projects.find((p) => p.slug === "hotline");
+    expect(project?.cta?.href).toBe(hotline.path);
+    const hrefs = (project?.links ?? []).map((l) => l.href);
+    expect(hrefs).toContain(hotline.repo);
+    expect(hrefs).toContain(hotline.releases);
+  });
+
+  it("hotline URLs are https GitHub links for the Hotline repo", () => {
+    for (const key of [
+      "repo",
+      "releases",
+      "latestRelease",
+      "privacy",
+      "configuration",
+      "license",
+    ] as const) {
+      expect(hotline[key]).toMatch(/^https:\/\/github\.com\/PMARC14\/Hotline/);
     }
   });
 
