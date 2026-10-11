@@ -53,6 +53,12 @@ into `analyticsToken` in `src/data/site.ts`.
 Link previews use `public/og.png` (1200×630, wired up in `src/lib/metadata.ts`);
 re-render it if your name or tagline changes.
 
+Hotline also has a dedicated install page at `/hotline`
+([`src/app/hotline/page.tsx`](src/app/hotline/page.tsx)). Its links and install
+facts live in [`src/data/hotline.ts`](src/data/hotline.ts), shared with the case
+study's links; the project's own README is the source of truth. A project can
+show screenshots (`images`) and a primary button to a page on this site (`cta`).
+
 ### Unlisted pages
 
 Set `unlisted: true` on any project and its page still builds at

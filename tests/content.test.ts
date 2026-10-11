@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-
+import { hotline } from "@/data/hotline";
 import { featuredProjects, projects, visibleProjects } from "@/data/projects";
 import { site } from "@/data/site";
 
@@ -78,6 +78,35 @@ describe("project data", () => {
     expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
     expect(png.readUInt32BE(16), "declared width").toBe(image.width);
     expect(png.readUInt32BE(20), "declared height").toBe(image.height);
+  });
+
+  it("call-to-action buttons point at pages on this site", () => {
+    for (const project of projects) {
+      if (!project.cta) continue;
+      expect(project.cta.href).toMatch(/^\/[a-z0-9-/]*$/);
+      expect(project.cta.label.trim()).not.toBe("");
+    }
+  });
+
+  it("hotline's case study links its install page and shared URLs", () => {
+    const project = projects.find((p) => p.slug === "hotline");
+    expect(project?.cta?.href).toBe(hotline.path);
+    const hrefs = (project?.links ?? []).map((l) => l.href);
+    expect(hrefs).toContain(hotline.repo);
+    expect(hrefs).toContain(hotline.releases);
+  });
+
+  it("hotline URLs are https GitHub links for the Hotline repo", () => {
+    for (const key of [
+      "repo",
+      "releases",
+      "latestRelease",
+      "privacy",
+      "configuration",
+      "license",
+    ] as const) {
+      expect(hotline[key]).toMatch(/^https:\/\/github\.com\/PMARC14\/Hotline/);
+    }
   });
 
   it("keeps unlisted projects out of the visible and featured sets", () => {

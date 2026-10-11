@@ -72,6 +72,20 @@ export default async function ProjectPage({ params }: Props) {
         <p className="mt-5 max-w-2xl text-lg text-muted leading-relaxed sm:text-xl">
           {project.summary}
         </p>
+        {project.cta && (
+          <Link
+            className="group mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-medium text-bg text-sm transition-colors hover:bg-accent"
+            href={project.cta.href}
+          >
+            {project.cta.label}
+            <span
+              aria-hidden="true"
+              className="transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
+        )}
       </header>
 
       <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-line border-y py-8 sm:grid-cols-3">

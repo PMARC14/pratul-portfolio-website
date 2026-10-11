@@ -14,6 +14,8 @@
  * ─────────────────────────────────────────────────────────────────────
  */
 
+import { hotline } from "./hotline";
+
 export type ProjectLink = {
   label: string;
   href: string;
@@ -45,6 +47,8 @@ export type Project = {
   links?: ProjectLink[];
   /** Optional screenshots shown under the title on the breakdown page. */
   images?: ProjectImage[];
+  /** Optional primary button on the breakdown page, pointing at a page on this site. */
+  cta?: { label: string; href: string };
   /** Featured projects appear on the home page. */
   featured: boolean;
   /**
@@ -79,16 +83,11 @@ export const projects: Project[] = [
       "Shipped like a product: 500+ unit tests, an end-to-end smoke test that drives the Copilot key, hotkey, and protocol links, CI on every PR, and automated x64 + ARM64 MSIX releases.",
     ],
     links: [
-      { label: "Source on GitHub", href: "https://github.com/PMARC14/Hotline" },
-      {
-        label: "Releases",
-        href: "https://github.com/PMARC14/Hotline/releases",
-      },
-      {
-        label: "Privacy policy",
-        href: "https://github.com/PMARC14/Hotline/blob/main/PRIVACY.md",
-      },
+      { label: "Source on GitHub", href: hotline.repo },
+      { label: "Releases", href: hotline.releases },
+      { label: "Privacy policy", href: hotline.privacy },
     ],
+    cta: { label: "Install Hotline", href: hotline.path },
     images: [
       {
         src: "/projects/hotline-panel.png",
@@ -101,6 +100,38 @@ export const projects: Project[] = [
         alt: "The Hotline settings window on the General page, with options for what a short and long press of the Copilot key do, an extra hotkey, and window behavior.",
         width: 900,
         height: 668,
+      },
+    ],
+    featured: true,
+  },
+  {
+    slug: "unlimited-upgrades",
+    title: "Unlimited Upgrades",
+    year: "2026",
+    summary:
+      "A mod for House of the Dying Sun that lifts the cap on ship upgrades and adds a scrolling, one-click hangar UI.",
+    overview: [
+      "House of the Dying Sun is a Unity space-combat game that limits how many field upgrades a ship can carry. Unlimited Upgrades removes that limit: any Interceptor, Destroyer, or Capital ship can equip as many upgrades as you own.",
+      "The game isn't built for modding, so the mod loads through BepInEx and changes the game at runtime with Harmony instead of editing its files — six patches in about 300 lines of C#. They lift the per-ship cap, replace the hangar's fixed row of slots with a scrolling window that always ends in an empty slot, and turn the upgrade picker into a toggle: click to equip, click again to remove. Scrolling works with the mouse wheel, arrow keys or WASD, and a controller's D-pad.",
+      "Upgrades that don't belong on a ship's class are blocked before they're attached, which keeps fighter-only upgrades off capital ships, and loadouts are saved through the game's own save system. It's packaged for mod managers with a Thunderstore manifest and a BepInEx dependency, and released under the MIT license.",
+    ],
+    role: "Developer",
+    stack: ["C#", "Harmony", "BepInEx", "Unity"],
+    highlights: [
+      "Changes a closed-source Unity game at runtime with Harmony patches, rather than modifying its files.",
+      "Replaced the fixed slot row with a scrolling window: mouse wheel, keyboard, and controller navigation, with an empty slot always at the end for adding more.",
+      "Toggle-style selection: click an upgrade to equip it and click again to remove it, and buying a locked upgrade equips it straight away.",
+      "A compatibility guard blocks upgrades that don't fit a ship's class, so fighter-only upgrades can't end up on capital ships.",
+      "Saves loadouts through the game's own save system, and ships as a Thunderstore package that mod managers can install in one click.",
+    ],
+    links: [
+      {
+        label: "Source on GitHub",
+        href: "https://github.com/PMARC14/Unlimited_Upgrades",
+      },
+      {
+        label: "Releases",
+        href: "https://github.com/PMARC14/Unlimited_Upgrades/releases",
       },
     ],
     featured: true,
