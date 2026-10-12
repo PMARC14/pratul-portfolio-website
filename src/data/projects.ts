@@ -130,6 +130,10 @@ export const projects: Project[] = [
         label: "Source on GitHub",
         href: "https://github.com/PMARC14/Unlimited_Upgrades",
       },
+      {
+        label: "Thunderstore",
+        href: "https://thunderstore.io/c/hotds/p/BaconGames/Unlimited_Upgrades/",
+      },
     ],
     featured: true,
   },
