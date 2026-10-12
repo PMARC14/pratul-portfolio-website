@@ -18,20 +18,28 @@ const steps = [
     title: "Download it",
     body: (
       <>
-        Grab the latest <code className="font-mono text-ink">.msixbundle</code>{" "}
-        from{" "}
+        Get it from the{" "}
+        <a
+          className="font-medium text-ink underline decoration-2 decoration-accent underline-offset-4 transition-colors hover:text-accent"
+          href={hotline.store}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Microsoft Store
+        </a>
+        , where Microsoft signs it and keeps it up to date. Or grab the latest{" "}
+        <code className="font-mono text-ink">.msixbundle</code> from{" "}
         <a
           className="font-medium text-ink underline decoration-2 decoration-accent underline-offset-4 transition-colors hover:text-accent"
           href={hotline.latestRelease}
           rel="noreferrer"
           target="_blank"
         >
-          Releases
+          GitHub Releases
         </a>{" "}
-        and double-click it. Windows' App Installer opens with an Install
-        button. For automatic updates, download{" "}
-        <code className="font-mono text-ink">Hotline.appinstaller</code> and
-        open that instead.
+        and double-click it; for automatic updates, open{" "}
+        <code className="font-mono text-ink">Hotline.appinstaller</code>{" "}
+        instead.
       </>
     ),
   },
@@ -43,9 +51,10 @@ const steps = [
         <span className="font-medium text-ink">
           Settings → Personalization → Text input → Customize Copilot key on
           keyboard → Custom → Hotline
-        </span>
-        . Windows only lets packaged apps take the key, which is why Hotline
-        installs as a package.
+        </span>{" "}
+        (the Store version may be listed as {hotline.storeName}). Windows only
+        lets packaged apps take the key, which is why Hotline installs as a
+        package.
       </>
     ),
   },
@@ -108,19 +117,19 @@ export default function HotlinePage() {
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <a
               className="rounded-full bg-ink px-6 py-3 font-medium text-bg text-sm transition-colors hover:bg-accent"
+              href={hotline.store}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Get it from the Microsoft Store &#8599;
+            </a>
+            <a
+              className="rounded-full border border-line px-6 py-3 font-medium text-sm transition-colors hover:border-accent hover:text-accent"
               href={hotline.latestRelease}
               rel="noreferrer"
               target="_blank"
             >
-              Download latest release &#8599;
-            </a>
-            <a
-              className="rounded-full border border-line px-6 py-3 font-medium text-sm transition-colors hover:border-accent hover:text-accent"
-              href={hotline.repo}
-              rel="noreferrer"
-              target="_blank"
-            >
-              View on GitHub &#8599;
+              Download from GitHub &#8599;
             </a>
           </div>
 
@@ -132,7 +141,16 @@ export default function HotlinePage() {
             Curious how it's built?{" "}
             <Link className={linkClasses} href="/projects/hotline">
               Read the case study
-            </Link>
+            </Link>{" "}
+            or{" "}
+            <a
+              className={linkClasses}
+              href={hotline.repo}
+              rel="noreferrer"
+              target="_blank"
+            >
+              browse the source on GitHub
+            </a>
             .
           </p>
         </div>
@@ -174,7 +192,7 @@ export default function HotlinePage() {
 
         <details className="mt-6 rounded-2xl border border-line p-6">
           <summary className="cursor-pointer font-medium text-sm">
-            Windows won't install a test build?
+            Windows refuses a GitHub test build?
           </summary>
           <div className="mt-4 space-y-3 text-muted text-sm leading-relaxed">
             <p>
@@ -189,8 +207,8 @@ export default function HotlinePage() {
             </pre>
             <p>
               Each test build has its own certificate, and test builds don't
-              update automatically. Releases signed with a trusted certificate
-              need none of this.
+              update automatically. The Microsoft Store version and releases
+              signed with a trusted certificate need none of this.
             </p>
           </div>
         </details>

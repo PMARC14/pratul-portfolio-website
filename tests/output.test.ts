@@ -210,6 +210,12 @@ describe("hotline install page", () => {
     }
   });
 
+  it("offers the Microsoft Store as the primary install", () => {
+    expect(html()).toContain(`href="${hotline.store}"`);
+    expect(html()).toContain("Get it from the Microsoft Store");
+    expect(html()).toContain(hotline.storeName);
+  });
+
   it("explains how to assign the Copilot key and states the requirements", () => {
     expect(html()).toContain("Customize Copilot key on keyboard");
     expect(html()).toContain(hotline.requirements);

@@ -15,5 +15,8 @@ export const hotline = {
   privacy: `${repo}/blob/main/PRIVACY.md`,
   configuration: `${repo}/blob/main/docs/configuration.md`,
   license: `${repo}/blob/main/LICENSE`,
+  /** Microsoft Store listing. The Store calls the app "Hotline AI". */
+  store: "https://apps.microsoft.com/detail/9pmw5cr6g3bc",
+  storeName: "Hotline AI",
   requirements: "Windows 11 22H2 or later, on x64 or ARM64",
 } as const;

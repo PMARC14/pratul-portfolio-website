@@ -109,6 +109,15 @@ describe("project data", () => {
     }
   });
 
+  it("hotline's Microsoft Store link is a clean apps.microsoft.com URL", () => {
+    expect(hotline.store).toMatch(
+      /^https:\/\/apps\.microsoft\.com\/detail\/[a-z0-9]{12}$/i,
+    );
+    expect(hotline.store, "no tracking query string").not.toContain("?");
+    const project = projects.find((p) => p.slug === "hotline");
+    expect((project?.links ?? []).map((l) => l.href)).toContain(hotline.store);
+  });
+
   it("keeps unlisted projects out of the visible and featured sets", () => {
     for (const project of visibleProjects) {
       expect(project.unlisted).not.toBe(true);
