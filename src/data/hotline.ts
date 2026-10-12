@@ -11,7 +11,6 @@ export const hotline = {
   path: "/hotline",
   repo,
   releases: `${repo}/releases`,
-  latestRelease: `${repo}/releases/latest`,
   privacy: `${repo}/blob/main/PRIVACY.md`,
   configuration: `${repo}/blob/main/docs/configuration.md`,
   license: `${repo}/blob/main/LICENSE`,

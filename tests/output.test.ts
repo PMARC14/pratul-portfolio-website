@@ -201,7 +201,7 @@ describe("hotline install page", () => {
 
   it("links the download, the repo, and the privacy policy", () => {
     for (const href of [
-      hotline.latestRelease,
+      hotline.releases,
       hotline.repo,
       hotline.privacy,
       hotline.license,

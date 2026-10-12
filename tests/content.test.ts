@@ -100,7 +100,6 @@ describe("project data", () => {
     for (const key of [
       "repo",
       "releases",
-      "latestRelease",
       "privacy",
       "configuration",
       "license",

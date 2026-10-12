@@ -31,7 +31,7 @@ const steps = [
         <code className="font-mono text-ink">.msixbundle</code> from{" "}
         <a
           className="font-medium text-ink underline decoration-2 decoration-accent underline-offset-4 transition-colors hover:text-accent"
-          href={hotline.latestRelease}
+          href={hotline.releases}
           rel="noreferrer"
           target="_blank"
         >
@@ -125,7 +125,7 @@ export default function HotlinePage() {
             </a>
             <a
               className="rounded-full border border-line px-6 py-3 font-medium text-sm transition-colors hover:border-accent hover:text-accent"
-              href={hotline.latestRelease}
+              href={hotline.releases}
               rel="noreferrer"
               target="_blank"
             >

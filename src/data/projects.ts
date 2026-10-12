@@ -130,10 +130,6 @@ export const projects: Project[] = [
         label: "Source on GitHub",
         href: "https://github.com/PMARC14/Unlimited_Upgrades",
       },
-      {
-        label: "Releases",
-        href: "https://github.com/PMARC14/Unlimited_Upgrades/releases",
-      },
     ],
     featured: true,
   },
