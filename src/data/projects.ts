@@ -70,7 +70,7 @@ export const projects: Project[] = [
     overview: [
       "Windows 11 keyboards ship with a Copilot key that only opens Microsoft's assistant. Hotline takes it over: one press opens a native popup on the monitor you're working on, focused and ready to type, and it talks to the AI you pick — your existing Claude Code or Antigravity CLI sign-ins, an Anthropic, Gemini, or OpenAI-compatible API key, or a local model behind an OpenAI-style server like llama.cpp.",
       "It's a WinUI 3 app with no embedded webview, built on a UI-free .NET core. Answers render as Markdown with tables, copyable code, math, and inline SVG. It pulls in context without grabbing your clipboard — the text you had selected arrives through UI Automation, and screenshots fall back to Windows' offline OCR for models that can't see images. Tools come from your MCP servers; read-only tools run on their own and anything else asks first. Settings, prompts, quick actions, and memory are all plain files, and API keys live in Windows Credential Locker.",
-      "Hotline has no server, accounts, or telemetry, and ships with a written privacy policy that says exactly what leaves your PC. It's pre-1.0 and used daily, so expect rough edges: Windows 11 only (x64 and ARM64), Apache-2.0, and developed in the open by one person.",
+      "Hotline has no server, accounts, or telemetry, and ships with a written privacy policy that says exactly what leaves your PC. It's pre-1.0 and used daily, so expect rough edges: Windows 11 only (x64 and ARM64), Apache-2.0, and developed in the open by one person. It's available from the Microsoft Store (as Hotline AI) and from GitHub Releases.",
     ],
     role: "Design & engineering (solo)",
     stack: ["C#", ".NET 10", "WinUI 3", "MSIX", "MCP", "GitHub Actions"],
@@ -84,6 +84,7 @@ export const projects: Project[] = [
     ],
     links: [
       { label: "Source on GitHub", href: hotline.repo },
+      { label: "Microsoft Store", href: hotline.store },
       { label: "Releases", href: hotline.releases },
       { label: "Privacy policy", href: hotline.privacy },
     ],
@@ -130,8 +131,8 @@ export const projects: Project[] = [
         href: "https://github.com/PMARC14/Unlimited_Upgrades",
       },
       {
-        label: "Releases",
-        href: "https://github.com/PMARC14/Unlimited_Upgrades/releases",
+        label: "Thunderstore",
+        href: "https://thunderstore.io/c/hotds/p/BaconGames/Unlimited_Upgrades/",
       },
     ],
     featured: true,

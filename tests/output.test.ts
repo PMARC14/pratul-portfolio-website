@@ -201,13 +201,19 @@ describe("hotline install page", () => {
 
   it("links the download, the repo, and the privacy policy", () => {
     for (const href of [
-      hotline.latestRelease,
+      hotline.releases,
       hotline.repo,
       hotline.privacy,
       hotline.license,
     ]) {
       expect(html()).toContain(`href="${href}"`);
     }
+  });
+
+  it("offers the Microsoft Store as the primary install", () => {
+    expect(html()).toContain(`href="${hotline.store}"`);
+    expect(html()).toContain("Get it from the Microsoft Store");
+    expect(html()).toContain(hotline.storeName);
   });
 
   it("explains how to assign the Copilot key and states the requirements", () => {

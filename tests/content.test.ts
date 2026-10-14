@@ -100,13 +100,21 @@ describe("project data", () => {
     for (const key of [
       "repo",
       "releases",
-      "latestRelease",
       "privacy",
       "configuration",
       "license",
     ] as const) {
       expect(hotline[key]).toMatch(/^https:\/\/github\.com\/PMARC14\/Hotline/);
     }
+  });
+
+  it("hotline's Microsoft Store link is a clean apps.microsoft.com URL", () => {
+    expect(hotline.store).toMatch(
+      /^https:\/\/apps\.microsoft\.com\/detail\/[a-z0-9]{12}$/i,
+    );
+    expect(hotline.store, "no tracking query string").not.toContain("?");
+    const project = projects.find((p) => p.slug === "hotline");
+    expect((project?.links ?? []).map((l) => l.href)).toContain(hotline.store);
   });
 
   it("keeps unlisted projects out of the visible and featured sets", () => {
