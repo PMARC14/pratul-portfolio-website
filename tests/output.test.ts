@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -212,7 +213,6 @@ describe("hotline install page", () => {
 
   it("offers the Microsoft Store as the primary install", () => {
     expect(html()).toContain(`href="${hotline.store}"`);
-    expect(html()).toContain("Get it from the Microsoft Store");
     expect(html()).toContain(hotline.storeName);
   });
 
@@ -234,6 +234,65 @@ describe("hotline install page", () => {
       expect(anchor, anchor).toContain('rel="noreferrer"');
       expect(anchor, anchor).toContain('target="_blank"');
     }
+  });
+});
+
+describe("top navigation", () => {
+  it.each(
+    htmlFiles().filter((f) => f !== "404.html"),
+  )("%s lists Projects, About, Contact, then Hotline", (file) => {
+    const nav =
+      read(file).match(/<nav aria-label="Primary"[^>]*>[\s\S]*?<\/nav>/)?.[0] ?? "";
+    const hrefs = Array.from(nav.matchAll(/href="([^"]+)"/g)).map((m) => m[1]);
+    // The Projects dropdown adds project links; the top-level order is what matters.
+    const top = ["/projects", "/about", "/contact", "/hotline"];
+    const positions = top.map((href) => hrefs.indexOf(href));
+    expect(
+      positions.every((i) => i >= 0),
+      `${file}: ${hrefs.join(" ")}`,
+    ).toBe(true);
+    expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+  });
+});
+
+describe("hotline download buttons", () => {
+  const html = () => read("hotline.html");
+  const sha256 = (file: string) =>
+    createHash("sha256")
+      .update(readFileSync(path.join(OUT, file)))
+      .digest("hex");
+
+  it("uses the official Microsoft Store badge, in both themes", () => {
+    expect(html()).toContain('src="/badges/get-it-from-microsoft-dark.svg"');
+    expect(html()).toContain('src="/badges/get-it-from-microsoft-light.svg"');
+    expect(
+      html().match(/alt="Download from the Microsoft Store"/g),
+    ).toHaveLength(2);
+    expect(html()).toMatch(
+      new RegExp(`<a [^>]*href="${hotline.store}"[^>]*>\\s*<img`),
+    );
+  });
+
+  it("keeps Microsoft's badge artwork unmodified", () => {
+    // Fingerprints of the files as published in github.com/microsoft/app-store-badge.
+    // Microsoft's badge guidelines forbid altering the artwork; if Microsoft
+    // publishes new badges, replace the files and update these hashes.
+    expect(sha256("badges/get-it-from-microsoft-dark.svg")).toBe(
+      "4dd60ab7da78074387efdb36ccc4ef0fe25abb45130f4ba812b99dee52ccfe17",
+    );
+    expect(sha256("badges/get-it-from-microsoft-light.svg")).toBe(
+      "8b7f0a12403ecda4827eece2f31a4419d5277a1cff61296fa9a699a163dbb422",
+    );
+  });
+
+  it("offers a branded GitHub download button to the releases page", () => {
+    const button = html().match(
+      new RegExp(`<a [^>]*href="${hotline.releases}"[^>]*>[\\s\\S]*?</a>`),
+    )?.[0];
+    expect(button, "GitHub download button missing").toBeDefined();
+    expect(button).toContain("Download from");
+    expect(button).toContain("GitHub");
+    expect(button).toContain("<svg");
   });
 });
 

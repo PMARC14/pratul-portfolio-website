@@ -76,6 +76,38 @@
     0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -8px rgb(0 0 0 / 0.9);
 }
 
+/*
+ * Show the badge that matches the theme. The official Microsoft Store badge
+ * comes as a dark one (for light pages) and a light one (for dark pages).
+ * Follows the same rules as the colour tokens above: the system preference
+ * unless the header toggle forces a theme.
+ */
+.theme-light-only {
+  display: inline-block;
+}
+
+.theme-dark-only {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-light-only {
+    display: none;
+  }
+
+  :root:not([data-theme="light"]) .theme-dark-only {
+    display: inline-block;
+  }
+}
+
+:root[data-theme="dark"] .theme-light-only {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-dark-only {
+  display: inline-block;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-ink: var(--ink);

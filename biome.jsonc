@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "root": true,
+  // The official Microsoft Store badges in public/badges must stay byte-for-byte
+  // as Microsoft published them, so the formatter and linter skip that folder.
+  "files": {
+    "includes": ["**", "!public/badges"]
+  },
   "vcs": {
     "enabled": true,
     "useIgnoreFile": true,
