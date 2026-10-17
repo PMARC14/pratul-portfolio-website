@@ -50,6 +50,11 @@ consent banner). The CSP already allows its beacon. If the dashboard's
 automatic setup doesn't report, use the manual snippet and paste its token
 into `analyticsToken` in `src/data/site.ts`.
 
+The Microsoft Store button on `/hotline` uses Microsoft's own badge artwork in
+`public/badges/`, copied unmodified from
+[microsoft/app-store-badge](https://github.com/microsoft/app-store-badge) (a test
+pins their fingerprints, and Biome skips the folder). Don't edit or redraw them.
+
 Link previews use `public/og.png` (1200×630, wired up in `src/lib/metadata.ts`);
 re-render it if your name or tagline changes.
 

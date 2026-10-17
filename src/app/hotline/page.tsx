@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import {
+  GitHubDownloadButton,
+  MicrosoftStoreBadge,
+} from "@/components/download-badges";
 import { hotline } from "@/data/hotline";
 import { accent, accentStyle } from "@/lib/accents";
 import { pageMetadata } from "@/lib/metadata";
@@ -115,22 +119,8 @@ export default function HotlinePage() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a
-              className="rounded-full bg-ink px-6 py-3 font-medium text-bg text-sm transition-colors hover:bg-accent"
-              href={hotline.store}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Get it from the Microsoft Store &#8599;
-            </a>
-            <a
-              className="rounded-full border border-line px-6 py-3 font-medium text-sm transition-colors hover:border-accent hover:text-accent"
-              href={hotline.releases}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Download from GitHub &#8599;
-            </a>
+            <MicrosoftStoreBadge href={hotline.store} />
+            <GitHubDownloadButton href={hotline.releases} />
           </div>
 
           <p className="mt-6 font-mono text-muted text-xs leading-relaxed">

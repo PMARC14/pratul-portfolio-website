@@ -12,6 +12,7 @@ const navItems = [
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Hotline", href: "/hotline" },
 ] as const;
 
 type DropdownProject = {
@@ -78,7 +79,7 @@ export function SiteHeader({ projects }: { projects: DropdownProject[] }) {
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-6 px-6 py-4">
+      <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-4">
         <Link
           className="font-medium text-sm tracking-tight transition-colors hover:text-accent"
           href="/"
@@ -86,9 +87,12 @@ export function SiteHeader({ projects }: { projects: DropdownProject[] }) {
           {site.name}
         </Link>
 
-        <div className="flex items-center gap-5 sm:gap-7">
-          <nav aria-label="Primary">
-            <ul className="flex items-center gap-5 sm:gap-7">
+        <div className="contents sm:flex sm:items-center sm:gap-7">
+          <nav
+            aria-label="Primary"
+            className="order-last w-full sm:order-none sm:w-auto"
+          >
+            <ul className="flex items-center justify-between sm:gap-7">
               {navItems.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 const isProjects = item.href === "/projects";
@@ -99,7 +103,7 @@ export function SiteHeader({ projects }: { projects: DropdownProject[] }) {
                   >
                     <Link
                       aria-current={isActive ? "page" : undefined}
-                      className={`inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-widest transition-colors hover:text-ink ${
+                      className={`inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider transition-colors hover:text-ink sm:tracking-widest ${
                         isActive
                           ? "text-ink underline decoration-2 decoration-accent underline-offset-8"
                           : "text-muted"
