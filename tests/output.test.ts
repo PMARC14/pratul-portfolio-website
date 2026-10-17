@@ -242,7 +242,8 @@ describe("top navigation", () => {
     htmlFiles().filter((f) => f !== "404.html"),
   )("%s lists Projects, About, Contact, then Hotline", (file) => {
     const nav =
-      read(file).match(/<nav aria-label="Primary"[^>]*>[\s\S]*?<\/nav>/)?.[0] ?? "";
+      read(file).match(/<nav aria-label="Primary"[^>]*>[\s\S]*?<\/nav>/)?.[0] ??
+      "";
     const hrefs = Array.from(nav.matchAll(/href="([^"]+)"/g)).map((m) => m[1]);
     // The Projects dropdown adds project links; the top-level order is what matters.
     const top = ["/projects", "/about", "/contact", "/hotline"];
