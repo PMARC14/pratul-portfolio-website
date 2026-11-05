@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+// Don't inherit the home page's canonical/og:url. (Next already marks
+// this page noindex.)
+export const metadata: Metadata = {
+  title: "Page not found",
+  alternates: { canonical: null },
+  openGraph: null,
+};
 
 export default function NotFound() {
   return (

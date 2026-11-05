@@ -25,6 +25,47 @@ const MAX_ENTRIES = 50;
 // 120 chars); anything past this is junk and never gets parsed.
 const MAX_BODY_BYTES = 4096;
 
+/**
+ * Rate-limit key for a client. IPv6 users usually control a whole /64,
+ * so keying by the full address would let one person rotate through
+ * billions of keys; the /64 prefix is the practical "one household" unit.
+ */
+export function limiterKey(ip: string | null): string {
+  if (!ip) return "local";
+  if (!ip.includes(":")) return ip;
+  const [head = "", tail = ""] = ip.split("::");
+  const left = head ? head.split(":") : [];
+  const right = tail ? tail.split(":") : [];
+  const groups = ip.includes("::")
+    ? [...left, ...Array(8 - left.length - right.length).fill("0"), ...right]
+    : left;
+  return `${groups
+    .slice(0, 4)
+    .map((g) => g.toLowerCase().replace(/^0+(?=.)/, ""))
+    .join(":")}::/64`;
+}
+
+/**
+ * Only the site's own page may post. Requiring a JSON content type means
+ * a cross-site browser request must pass a CORS preflight, which fails
+ * because this API sends no CORS headers; the Origin/Sec-Fetch-Site
+ * checks reject the rest outright.
+ */
+function rejectForeignPost(request: Request, url: URL): Response | null {
+  const type = request.headers.get("content-type") ?? "";
+  if (!type.toLowerCase().startsWith("application/json")) {
+    return json({ error: "Body must be JSON." }, 415);
+  }
+  if (request.headers.get("sec-fetch-site") === "cross-site") {
+    return json({ error: "Cross-site posts aren't accepted." }, 403);
+  }
+  const origin = request.headers.get("origin");
+  if (origin && origin !== url.origin) {
+    return json({ error: "Cross-site posts aren't accepted." }, 403);
+  }
+  return null;
+}
+
 function json(
   data: unknown,
   status = 200,
@@ -56,11 +97,20 @@ async function handleEntries(request: Request, env: Env): Promise<Response> {
   }
 
   if (request.method === "POST") {
-    // Throttle before doing any work. Cloudflare always sets
+    const foreign = rejectForeignPost(request, new URL(request.url));
+    if (foreign) return foreign;
+
+    // Refuse declared-oversized bodies before reading a byte of them.
+    const declared = Number(request.headers.get("content-length"));
+    if (declared > MAX_BODY_BYTES) {
+      return json({ error: "Request body is too large." }, 413);
+    }
+
+    // Throttle before doing any real work. Cloudflare always sets
     // CF-Connecting-IP in production; the key lives only in the rate
     // limiter and is never stored with the entry.
     if (env.POST_LIMITER) {
-      const key = request.headers.get("cf-connecting-ip") ?? "local";
+      const key = limiterKey(request.headers.get("cf-connecting-ip"));
       const { success } = await env.POST_LIMITER.limit({ key });
       if (!success) {
         return json(
@@ -101,7 +151,9 @@ async function handleEntries(request: Request, env: Env): Promise<Response> {
     return json({ ok: true }, 201);
   }
 
-  return json({ error: "Method not allowed." }, 405);
+  return json({ error: "Method not allowed." }, 405, {
+    allow: "GET, POST",
+  });
 }
 
 export default {

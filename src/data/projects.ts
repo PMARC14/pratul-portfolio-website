@@ -146,10 +146,10 @@ export const projects: Project[] = [
     title: "This Website",
     year: "2026",
     summary:
-      "A fully static portfolio served from Cloudflare's edge — zero servers, sub-second loads worldwide.",
+      "A static-first portfolio on Cloudflare's edge — pre-rendered pages, a tiny Worker API, and a SQLite-backed contact book.",
     overview: [
-      "This site is a deliberately small system: Next.js 15 compiled to a fully static export, styled with a five-token Tailwind design system, and served as static assets by a Cloudflare Worker with a Cloudflare Pages fallback.",
-      "Every page is pre-rendered at build time — project breakdowns are generated from a single typed data file, so adding a case study is a data change, not a code change. No runtime, no database, nothing to patch on a Sunday night.",
+      "This site is a deliberately small system: Next.js 15 compiled to a fully static export, styled with a five-token Tailwind design system, and served from Cloudflare's edge by a Worker that also runs a small API.",
+      "Every page is pre-rendered at build time — project breakdowns are generated from a single typed data file, so adding a case study is a data change, not a code change. The only dynamic piece is the contact book: a few dozen lines of Worker code in front of a Cloudflare D1 (SQLite) database, with validation, a per-IP rate limit, and same-origin checks.",
     ],
     role: "Design & engineering",
     stack: [
@@ -157,11 +157,13 @@ export const projects: Project[] = [
       "TypeScript",
       "Tailwind CSS v4",
       "Cloudflare Workers",
+      "D1",
     ],
     highlights: [
-      "Static-first architecture: one `next build` artifact deploys unchanged to both Workers and Pages.",
-      "Design tokens with automatic light/dark schemes driven by system preference.",
+      "Static-first architecture: one `next build` artifact, with the Worker handling only /api — every page is a plain file on the edge.",
+      "Light, dark, or follow-the-system themes, applied before first paint so there's no flash.",
       "Accessible by construction — semantic landmarks, skip link, focus-visible states, reduced-motion support.",
+      "Every push is linted, type-checked, and tested — including assertions against the built HTML — before it can deploy.",
     ],
     links: [
       {

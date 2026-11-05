@@ -194,9 +194,10 @@ npx wrangler login   # once
 npm run deploy
 ```
 
-This builds the static export and deploys it as an **assets-only Worker**
-(config in [`wrangler.jsonc`](wrangler.jsonc)) — static hosting on the Workers
-platform with no Worker script and no per-request cost. Attach your custom
+This builds the static export and deploys it with the Worker in
+[`src/worker/index.ts`](src/worker/index.ts) (config in
+[`wrangler.jsonc`](wrangler.jsonc)). Pages are served straight from the asset
+layer; only `/api/*` (the contact book) runs Worker code. Attach your custom
 domain in the Cloudflare dashboard under the Worker's **Settings → Domains &
 Routes**.
 

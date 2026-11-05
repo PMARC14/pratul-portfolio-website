@@ -94,7 +94,10 @@ export function SiteHeader({ projects }: { projects: DropdownProject[] }) {
           >
             <ul className="flex items-center justify-between sm:gap-7">
               {navItems.map((item) => {
-                const isActive = pathname.startsWith(item.href);
+                // Segment match: /contact-book must not light up Contact.
+                const isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`);
                 const isProjects = item.href === "/projects";
                 return (
                   <li

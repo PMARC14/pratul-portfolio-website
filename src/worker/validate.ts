@@ -22,17 +22,31 @@ export type ValidationResult =
   | { ok: true; value: EntryInput }
   | { ok: false; error: string };
 
+/**
+ * Normalizes user text: unifies line endings and tabs, then drops control
+ * characters (except newline) and invisible format characters such as
+ * zero-width spaces and bidi overrides, which can make an entry look
+ * blank or display reversed. The zero-width joiner stays, since emoji
+ * sequences need it.
+ */
+export function clean(value: unknown): string {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/\r\n?/g, "\n")
+    .replace(/\t/g, " ")
+    .replace(/[^\P{Cc}\n]|[^\P{Cf}\u200d]/gu, "")
+    .trim();
+}
+
 export function validateEntry(input: unknown): ValidationResult {
   if (typeof input !== "object" || input === null) {
     return { ok: false, error: "Expected a JSON object." };
   }
   const record = input as Record<string, unknown>;
 
-  const name = typeof record.name === "string" ? record.name.trim() : "";
-  const message =
-    typeof record.message === "string" ? record.message.trim() : "";
-  const contactRaw =
-    typeof record.contact === "string" ? record.contact.trim() : "";
+  const name = clean(record.name).replace(/\s+/g, " ");
+  const message = clean(record.message);
+  const contactRaw = clean(record.contact);
   const website = typeof record.website === "string" ? record.website : "";
 
   if (!name) {

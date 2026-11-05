@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import worker from "./index";
+import worker, { limiterKey } from "./index";
 
 /**
  * Handler tests for the contact-book API. Lives under src/worker (not
@@ -32,16 +32,22 @@ function fakeDb(seed: Row[] = []) {
               if (!sql.startsWith("SELECT")) {
                 throw new Error(`unexpected all(): ${sql}`);
               }
+              // Honour the query's column list, so a test that checks
+              // which fields come back is testing the real SQL.
+              const columns = (/^SELECT (.+?) FROM/.exec(sql)?.[1] ?? "")
+                .split(",")
+                .map((c) => c.trim());
               const limit = args[0] as number;
               const results = [...rows]
                 .sort((a, b) => b.id - a.id)
                 .slice(0, limit)
-                .map(({ id, name, message, created_at }) => ({
-                  id,
-                  name,
-                  message,
-                  created_at,
-                }));
+                .map((row) =>
+                  columns.includes("*")
+                    ? { ...row }
+                    : Object.fromEntries(
+                        columns.map((c) => [c, row[c as keyof Row]]),
+                      ),
+                );
               return { results };
             },
             async run() {
@@ -332,5 +338,106 @@ describe("rate limiting", () => {
   it("still works where the binding is absent (Pages fallback, tests)", async () => {
     const res = await callFetch(post("/api/entries", validEntry), env());
     expect(res.status).toBe(201);
+  });
+});
+
+describe("cross-site protection", () => {
+  function postWith(headers: Record<string, string>) {
+    return new Request("https://example.com/api/entries", {
+      method: "POST",
+      body: JSON.stringify({ name: "Ada", message: "Hi" }),
+      headers,
+    });
+  }
+
+  it("rejects non-JSON content types (the no-preflight CORS route)", async () => {
+    const { db, inserted } = fakeDb();
+    const res = await callFetch(
+      postWith({ "content-type": "text/plain;charset=UTF-8" }),
+      env({ DB: db }),
+    );
+    expect(res.status).toBe(415);
+    expect(inserted).toHaveLength(0);
+  });
+
+  it("rejects posts from another origin", async () => {
+    const { db, inserted } = fakeDb();
+    const res = await callFetch(
+      postWith({
+        "content-type": "application/json",
+        origin: "https://evil.example",
+      }),
+      env({ DB: db }),
+    );
+    expect(res.status).toBe(403);
+    expect(inserted).toHaveLength(0);
+  });
+
+  it("rejects posts the browser marks cross-site", async () => {
+    const { db, inserted } = fakeDb();
+    const res = await callFetch(
+      postWith({
+        "content-type": "application/json",
+        "sec-fetch-site": "cross-site",
+      }),
+      env({ DB: db }),
+    );
+    expect(res.status).toBe(403);
+    expect(inserted).toHaveLength(0);
+  });
+
+  it("accepts posts from the site's own origin", async () => {
+    const { db, inserted } = fakeDb();
+    const res = await callFetch(
+      postWith({
+        "content-type": "application/json",
+        origin: "https://example.com",
+        "sec-fetch-site": "same-origin",
+      }),
+      env({ DB: db }),
+    );
+    expect(res.status).toBe(201);
+    expect(inserted).toHaveLength(1);
+  });
+
+  it("refuses a declared-oversized body before reading it", async () => {
+    const { db, inserted } = fakeDb();
+    const res = await callFetch(
+      postWith({
+        "content-type": "application/json",
+        "content-length": "90000000",
+      }),
+      env({ DB: db }),
+    );
+    expect(res.status).toBe(413);
+    expect(inserted).toHaveLength(0);
+  });
+
+  it("names the allowed methods on a 405", async () => {
+    const { db } = fakeDb();
+    const res = await callFetch(
+      new Request("https://example.com/api/entries", { method: "DELETE" }),
+      env({ DB: db }),
+    );
+    expect(res.status).toBe(405);
+    expect(res.headers.get("allow")).toBe("GET, POST");
+  });
+});
+
+describe("limiterKey", () => {
+  it("uses IPv4 addresses as-is", () => {
+    expect(limiterKey("203.0.113.9")).toBe("203.0.113.9");
+  });
+
+  it("collapses IPv6 addresses to their /64", () => {
+    expect(limiterKey("2001:db8:abcd:12:1:2:3:4")).toBe(
+      "2001:db8:abcd:12::/64",
+    );
+    expect(limiterKey("2001:0DB8:abcd:0012::99")).toBe("2001:db8:abcd:12::/64");
+    expect(limiterKey("2001:db8::1")).toBe("2001:db8:0:0::/64");
+  });
+
+  it("falls back to a shared key without an address", () => {
+    expect(limiterKey(null)).toBe("local");
   });
 });

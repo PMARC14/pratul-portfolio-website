@@ -30,12 +30,34 @@ const ICONS: Record<Theme, React.ReactNode> = {
  * script in layout.tsx replays it before first paint so there is
  * no flash on load. "System" simply removes the attribute.
  */
+// Storage can throw (blocked site data, some private modes). The theme
+// still switches for this visit; it just isn't remembered.
+function readStoredTheme(): string | null {
+  try {
+    return localStorage.getItem("theme");
+  } catch {
+    return null;
+  }
+}
+
+function storeTheme(theme: Theme) {
+  try {
+    if (theme === "system") {
+      localStorage.removeItem("theme");
+    } else {
+      localStorage.setItem("theme", theme);
+    }
+  } catch {
+    // Not persisted; nothing else to do.
+  }
+}
+
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("system");
 
   // Read the persisted choice after mount (SSR always renders "system").
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
+    const stored = readStoredTheme();
     if (stored === "light" || stored === "dark") {
       setTheme(stored);
     }
@@ -46,12 +68,11 @@ export function ThemeToggle() {
   function cycle() {
     setTheme(next);
     if (next === "system") {
-      localStorage.removeItem("theme");
       delete document.documentElement.dataset.theme;
     } else {
-      localStorage.setItem("theme", next);
       document.documentElement.dataset.theme = next;
     }
+    storeTheme(next);
   }
 
   return (

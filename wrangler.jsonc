@@ -2,9 +2,9 @@
  * Cloudflare Workers config.
  *
  * The Worker serves the static export in `out/` AND a small dynamic API
- * (the contact book, backed by D1/SQLite). Requests that match a static
- * asset are served directly without invoking the Worker; everything
- * else (/api/*, unknown paths) runs src/worker/index.ts.
+ * (the contact book, backed by D1/SQLite). /api/* always runs
+ * src/worker/index.ts; other requests that match a static asset are
+ * served directly, and the rest fall back to the static 404 page.
  *
  *   npm run deploy        → build + `wrangler deploy` (Workers)
  *   npm run deploy:pages  → build + `wrangler pages deploy` (static fallback;
@@ -30,8 +30,13 @@
     // Serve Next's generated 404.html for unknown paths.
     "not_found_handling": "404-page",
     // /about ↔ about.html resolution to match Next's export layout.
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    // The API always reaches the Worker, even for a browser navigation
+    // that would otherwise get the static 404 page.
+    "run_worker_first": ["/api/*"]
   },
+  // Workers Logs: console output (e.g. failed D1 calls) in the dashboard.
+  "observability": { "enabled": true },
   // Per-IP throttle for contact-book posts: 5 per minute. The Worker reads
   // it as env.POST_LIMITER; it needs no dashboard setup and stores nothing.
   "ratelimits": [

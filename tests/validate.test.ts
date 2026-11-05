@@ -93,3 +93,40 @@ describe("validateEntry", () => {
     }
   });
 });
+
+describe("invisible and control characters", () => {
+  it("strips zero-width and bidi-override characters", () => {
+    const result = validateEntry({
+      ...valid,
+      name: "Ada​‮",
+      message: "hi​ there",
+    });
+    expect(result).toEqual({
+      ok: true,
+      value: { ...valid, name: "Ada", message: "hi there" },
+    });
+  });
+
+  it("rejects a name made only of invisible characters", () => {
+    const result = validateEntry({ ...valid, name: "​​⁠" });
+    expect(result).toEqual({ ok: false, error: "Name is required." });
+  });
+
+  it("keeps newlines in messages but folds them out of names", () => {
+    const result = validateEntry({
+      ...valid,
+      name: "Ada\nLovelace",
+      message: "line one\r\nline two\u0007",
+    });
+    expect(result).toEqual({
+      ok: true,
+      value: { ...valid, name: "Ada Lovelace", message: "line one\nline two" },
+    });
+  });
+
+  it("keeps emoji joined by zero-width joiners intact", () => {
+    const family = "\u{1F468}‍\u{1F469}‍\u{1F467}";
+    const result = validateEntry({ ...valid, message: family });
+    expect(result.ok && result.value.message).toBe(family);
+  });
+});

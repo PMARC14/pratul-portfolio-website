@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { site } from "@/data/site";
 import { accentStyle } from "@/lib/accents";
 
 type Entry = {
@@ -11,7 +12,10 @@ type Entry = {
   created_at: string;
 };
 
-type Status = "loading" | "unavailable" | "ready";
+type Status = "loading" | "unavailable" | "error" | "ready";
+
+/** Matches MAX_ENTRIES in the Worker: the API returns at most this many. */
+const MAX_SHOWN = 50;
 
 const inputClasses =
   "w-full rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-accent";
@@ -29,7 +33,7 @@ function formatDate(sqliteUtc: string): string {
 /**
  * Client half of the contact book: reads and writes /api/entries, which
  * exists only on the Workers deployment. On a static-only host (Pages
- * fallback, `next dev`) the fetch fails and this degrades to a notice.
+ * fallback, `next dev`) the API 404s and this degrades to a notice.
  */
 export function ContactBook() {
   const [status, setStatus] = useState<Status>("loading");
@@ -37,15 +41,22 @@ export function ContactBook() {
   const [submitting, setSubmitting] = useState(false);
   const [note, setNote] = useState<string | null>(null);
 
+  // Only a missing API (404) means this is a static copy of the site.
+  // Anything else is a hiccup: the form stays usable, and a failed
+  // refresh after posting keeps the entries already on screen.
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/entries");
+      if (res.status === 404) {
+        setStatus("unavailable");
+        return;
+      }
       if (!res.ok) throw new Error(String(res.status));
       const data = (await res.json()) as { entries: Entry[] };
       setEntries(data.entries);
       setStatus("ready");
     } catch {
-      setStatus("unavailable");
+      setStatus((current) => (current === "loading" ? "error" : current));
     }
   }, []);
 
@@ -70,7 +81,11 @@ export function ContactBook() {
           website: data.get("website"),
         }),
       });
-      const result = (await res.json()) as { error?: string };
+      // Platform error pages (413, 502) aren't JSON; don't let that read
+      // as a network failure.
+      const result = (await res.json().catch(() => ({}))) as {
+        error?: string;
+      };
       if (!res.ok) {
         setNote(result.error ?? "Something went wrong — try again.");
       } else {
@@ -88,10 +103,14 @@ export function ContactBook() {
   if (status === "unavailable") {
     return (
       <div className="max-w-xl rounded-2xl border border-line p-6 text-muted text-sm leading-relaxed">
-        The contact book runs on the Cloudflare Workers deployment — this copy
-        of the site is static, so signing is disabled here. Locally, run{" "}
-        <code className="font-mono text-ink">npm run db:migrate</code> once,
-        then <code className="font-mono text-ink">npm run preview</code>.
+        The contact book isn't available on this copy of the site. Visit{" "}
+        <a
+          className="font-medium text-ink underline decoration-2 decoration-accent underline-offset-4 transition-colors hover:text-accent"
+          href={`${site.url}/contact-book`}
+        >
+          {site.url.replace(/^https:\/\//, "")}
+        </a>{" "}
+        to sign it, or just send me an email.
       </div>
     );
   }
@@ -179,12 +198,22 @@ export function ContactBook() {
         )}
       </form>
 
-      <div>
+      <div className="min-w-0">
         <h2 className="font-mono text-muted text-xs uppercase tracking-widest">
           {status === "loading"
             ? "Loading entries…"
-            : `${entries.length} ${entries.length === 1 ? "entry" : "entries"}`}
+            : status === "error"
+              ? "Entries"
+              : entries.length >= MAX_SHOWN
+                ? `Latest ${MAX_SHOWN} entries`
+                : `${entries.length} ${entries.length === 1 ? "entry" : "entries"}`}
         </h2>
+        {status === "error" && (
+          <p className="mt-4 text-muted text-sm leading-relaxed">
+            Couldn't load the entries just now — refresh to try again. You can
+            still sign the book.
+          </p>
+        )}
         {status === "ready" && entries.length === 0 && (
           <p className="mt-4 text-muted text-sm leading-relaxed">
             No entries yet — the first page is yours.
@@ -198,14 +227,14 @@ export function ContactBook() {
               style={accentStyle(index)}
             >
               <div className="flex items-baseline justify-between gap-4">
-                <p className="font-medium text-accent text-sm tracking-tight">
+                <p className="min-w-0 break-words font-medium text-accent text-sm tracking-tight">
                   {entry.name}
                 </p>
-                <p className="font-mono text-muted text-xs tabular-nums">
+                <p className="shrink-0 font-mono text-muted text-xs tabular-nums">
                   {formatDate(entry.created_at)}
                 </p>
               </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">
+              <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed">
                 {entry.message}
               </p>
             </li>
